@@ -173,3 +173,37 @@ $\delta := max \{ y - x: x,y \in S \and x \le y \and \neg (\exists z \in S: x < 
 
 MAXGAP has an $\Omega(nlogn)$ lower bound in the ACT model. Adding the floor function to the Real RAM allows to solve MAXGAP in $\theta(n)$ time.
 
+
+
+## Reduction of a problem
+
+#### Reduction
+
+A problem $A$ can be reduced (or transformed) to a problem $B$ if
+
+- every instance A of $A$ can be converted to an instance B of $B$
+
+- a solution S for $B$ can be computed, and
+
+- S can be transformed back into a correct solution for $A$.
+
+
+![reduction](/home/dominik/Git/Advanced-Algorithms-and-Data-Structures/images/reduction.png)
+
+
+
+#### $\tau$-Reducibility 
+
+A problem $A$ is $\tau$-reproducible to $B$, denoted by $A \leq_{\tau} B$, if
+
+- $A$ can be reduced to $B$
+- for any instance A of $A$, steps 1 and 3 of the reduction can be carried out in at most $\tau(|A|)$ time, where $|A|$ denotes the input size of A.
+
+#### Upper bound via reduction
+
+Suppose that $A$ is reducible to $B$ such that the order of the input size is preserved. If problem $B$ can be solved in $O(T)$ time, then $A$ can be solved in at most $O(T+\tau)$ time.
+
+#### Lower bound via reduction
+
+Suppose that $A$ is $\tau$-reducible to $B$ such that the order of the input size is preserved. If problem $A$ is known to require $\Omega(\tau)$ time, then $B$ requires at least $\Omega(T-\tau)$ time.
+
