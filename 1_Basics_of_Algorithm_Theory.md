@@ -207,3 +207,75 @@ Suppose that $A$ is reducible to $B$ such that the order of the input size is pr
 
 Suppose that $A$ is $\tau$-reducible to $B$ such that the order of the input size is preserved. If problem $A$ is known to require $\Omega(\tau)$ time, then $B$ requires at least $\Omega(T-\tau)$ time.
 
+##### Intuitive explanation
+
+Let's assume that we are given an problem $A$ and we know that its complexity has a lower bound of $\Omega(T_A)$. It's important to emphasize that we can rely on this bound. On other words, we know that this bound is correct due to some proof we or somebody else has done previously.
+
+Next, we reduce $A$ to a problem $B$. In other words, we find a transformation that can map any instance of $A$ to an instance of $B$. Now, let's assume that problem $B$ can be solved faster than $T_A$ and the transformation can done efficently (faster than $O(T_A)$). However, this would mean that we can solve $A$ by reducing it to $B$ faster than $\Omega(T_A)$ time. 
+
+**Contradiction:** We know that such a solution for $A$ does not exist, hence, we also know that such a solution for $B$ cannot exist. Therefore, $B$ needs to have a lower bound of at least $\Omega(T-\tau)$.
+
+
+
+#### Example: ELEMENTUNIQUENESS and SORTING
+
+
+
+##### ELEMENTUNIQUNESS
+
+**Given:** A set $S$ of $n$ real numbers $x_1, x_2, ..., x_n$
+
+**Decide:** Are any two numbers of $S$ equal?
+
+
+
+##### LEMMA:
+
+- ELEMENTUNIQUENESS can be solved in $O(f)+O(n)$ time if we can sort $n$ numbers in $O(f)$ time.
+- SORTING requires $\Omega(f)$ time if ELEMENTUNIQUENESS requires $\Omega(f)$ time.
+
+
+
+##### Proof:
+
+**Given:**
+
+- We know that SORTING can be solved in $O(f)$ time
+- We know that ELEMENTUNIQUENESS requires at least $\Omega(f)$ time
+
+Obviously, after sorting $x_1, x_2,..., x_n$ elements, we can solve ELEMENTUNIQUENESS in $O(n)$ time. Rest follows from definition of reduction.
+
+
+
+#### Example: CLOSESTPAIR and ELEMENTUNIQUENESS
+
+
+
+##### CLOSESTPAIR
+
+**Given:** A set of $S$ of $n$ points in the Euclidean plane
+
+**Compute:** Those two points of $S$ whose mutal distance is minimum among all all pairs of points of $S$.
+
+
+
+##### LEMMA:
+
+- ELEMENTUNIQUENESS can be solved in $O(f) + O(n)$ time if CLOSESTPAIR can be solved in $O(f)$ time.
+- CLOSESTPAIR requires $\Omega(f)$ time if ELEMENTUNIQUENESS requires $\Omega(f)$ time. 
+
+
+
+##### Proof:
+
+**Given:**
+
+- We know that CLOSESTPAIR can be solved in $O(f)$ time.
+
+- We know that ELEMENTUNIQUENESS requires at least $\Omega(f)$ time.
+
+
+Reduce ELEMENTUNIQUENESS to CLOSESTPAIR:
+
+- Let $S' := \{x_1, x_2, ..., x_n\}$ be an element of ELEMENTUNIQUENESS. Transform $S'$ into an element of CLOSESTPAIR by mapping every $x_i$ to an element $(x_i,0)$.  Obviously, the elements are unique if and only if the closest pair has non-zero distance. This transformation can be conducted in $O(n)$ time.
+
