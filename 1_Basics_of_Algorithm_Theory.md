@@ -188,7 +188,8 @@ A problem $A$ can be reduced (or transformed) to a problem $B$ if
 - S can be transformed back into a correct solution for $A$.
 
 
-![reduction](/home/dominik/Git/Advanced-Algorithms-and-Data-Structures/images/reduction.png)
+
+![reduction](images/reduction.png)
 
 
 
@@ -221,7 +222,7 @@ Next, we reduce $A$ to a problem $B$. In other words, we find a transformation t
 
 
 
-##### ELEMENTUNIQUNESS
+##### PROBLEM: ELEMENTUNIQUNESS
 
 **Given:** A set $S$ of $n$ real numbers $x_1, x_2, ..., x_n$
 
@@ -241,7 +242,9 @@ Next, we reduce $A$ to a problem $B$. In other words, we find a transformation t
 **Given:**
 
 - We know that SORTING can be solved in $O(f)$ time
+
 - We know that ELEMENTUNIQUENESS requires at least $\Omega(f)$ time
+
 
 Obviously, after sorting $x_1, x_2,..., x_n$ elements, we can solve ELEMENTUNIQUENESS in $O(n)$ time. Rest follows from definition of reduction.
 
@@ -251,7 +254,7 @@ Obviously, after sorting $x_1, x_2,..., x_n$ elements, we can solve ELEMENTUNIQU
 
 
 
-##### CLOSESTPAIR
+##### PROBLEM: CLOSESTPAIR
 
 **Given:** A set of $S$ of $n$ points in the Euclidean plane
 
@@ -278,4 +281,48 @@ Obviously, after sorting $x_1, x_2,..., x_n$ elements, we can solve ELEMENTUNIQU
 Reduce ELEMENTUNIQUENESS to CLOSESTPAIR:
 
 - Let $S' := \{x_1, x_2, ..., x_n\}$ be an element of ELEMENTUNIQUENESS. Transform $S'$ into an element of CLOSESTPAIR by mapping every $x_i$ to an element $(x_i,0)$.  Obviously, the elements are unique if and only if the closest pair has non-zero distance. This transformation can be conducted in $O(n)$ time.
+
+
+#### Example: SORTING and CONVEXHULL
+
+
+
+##### PROBLEM: CONVEXHULL
+
+**Given:** A set of $S$ of $n$ points in the Euclidean plan $\mathbb{R^2}$
+
+**Compute:** The convex hull $CH(S)$ (the smallest convex super set of $S$)
+
+
+
+##### Convex set
+
+A set $X \subset \mathbb{R^2}$ is *convex* if for every pair of points $p,q \in X$ also the line segment $\bar{pq}$ is contained in $X$.
+
+
+
+<img src="images/convex_set.png" style="height:150px" />
+
+
+
+##### LEMMA:
+
+- CONVEXHULL requires $\Omega(f)$ time if SORTING requires $\Omega(f)$ time.
+
+
+
+##### Proof:
+
+**Given:**
+
+- We know that SORTING requires at least $\Omega(f)$ time
+
+
+
+Suppose that $S' := \{ x_1, x_2, ..., x_n\}$ is an instance of SORTING. We transform it into an instance of CONVEXHULL by mapping every point $x_i$ to $(x_i,x_i^2)$. The convex hull of $S$ contains a list of vertices sorted by x-coordinates. One pass through this list will find the smallest element. The sorted numbers can
+be obtained by a second pass through this list, at a total extra cost of $O(n)$ time.
+
+
+
+<img src="images/convex_hull.png" style="height:150px" />
 
