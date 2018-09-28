@@ -429,3 +429,29 @@ Given a decision problem $P$ with $n$ variables. We get for the height $h$ of an
 
 
 
+#### Algebraic Computation Tree
+
+An *algebraic computation tree* with input $(x_1, x_2, ..., x_n) \in \mathbb{R}^n$ solves a decision problem $P$ if it is a finite rooted tree with at most two children per node and two types of internal nodes.
+
+**Computation:** 
+
+A computation node $v$ has a value $f_v$ determined by one of the following instructions:
+
+- $f_v = f_u \circ f_w$   or   $f_v = \sqrt{f_u}$
+
+where $\circ \in \{ +, -, \cdot, \setminus \}$ and $f_u, f_w$ are values associated with ancestors of $v$, input variables or arbitrary real constants.
+
+**Branch:**
+
+A branch node $v$ has two children and contains one of the predicates
+
+- $f_u > 0$        $f_u \geq 0$        $f_u = 0$
+
+where $f_u$ is a value associated with an ancestor of $v$ or an input variable.
+
+
+
+Every leaf node is associated with $Yes$ and $No$, depending on the correct answer for every $(x_1, x_2, ..., x_n)$ relative to $P$.
+
+
+
