@@ -326,3 +326,106 @@ be obtained by a second pass through this list, at a total extra cost of $O(n)$ 
 
 <img src="images/convex_hull.png" style="height:150px" />
 
+
+
+## Decision Problems
+
+
+
+#### Decision Problem
+
+A problem is a *decision problem* if the output sought for a particular instance of the problem always is the answer YES / NO.
+
+**Example:** Boolean satisfiability (SAT), "Are the numbers sorted?"
+
+
+
+##### Problem: SAT
+
+**Given:** A propositional formula $A$.
+
+**Decide:** Is $A$ satisfiable? For instance, does there exist an assighnment of truth values to the Boolean variables of $A$ such that $A$ evaluates to true?
+
+
+
+#### Algebraic Decision Trees
+
+An *algebraic decision tree (ADT)* with input vector $(x_1, x_2, ..., x_n) \in \mathbb{R}^n​$ is a finite rooted binary tree where
+
+- every internal node $v$ is given by a predicate
+
+  $f_v(x_1, x_2, ..., x_n)  \hspace{0.5cm} ?  \hspace{0.5cm} 0$
+
+- such that
+
+  - $f_v: \mathbb{R}^n \rightarrow \mathbb{R}$ is a polynomial in $x_1, ..., x_n$ of degree deg($f_v$), and
+  - "?" is a comparison operator ($<,\leq,\geq, >, \neq$)
+
+- every leaf node is associated with $Yes$ and $No$
+
+It solves a decision problem $P$ if its leaves are associated correctly with $Yes$ and $No$ relative to $P$ for every input $(x_1, x_2, ..., x_n)$. The algebraic degree of a decision tree with $k$ internal nodes $v_1, ..., v_k$ is given by the maximum degree of a polynomial at a node: max$_{1\leq i \leq k}$ deg($f_{v_i}$). An ADT is a *linear decision tree* if its algebraic degree is 1.
+
+
+
+**Example: Linear Decision Tree**
+
+<img src="images/linear_decision_tree.png" style="height:250px" />
+
+Note that every comparison $x_1 < x_2$ splits $\mathbb{R}^2$ into two half-planes. It yields true if and only if $(x_1,x_2) \in \mathbb{R}^2$ is a member of $W := \{ (u_1, u_2) \in \mathbb{R}^2: u_1 < u_2\}$.
+
+
+
+#### Membership set
+
+For a decision problem P with input variables $x_1, x_2, ..., x_n \in \mathbb{R}^2$ we define $W_P$ as the set of points in $\mathbb{R}^n$ for which the answer to the decision problem is $Yes$.
+
+$W_P := \{ (u_1, ..., u_n) \in \mathbb{R}^n: u_1, u_2, ..., u_n \text{ yield } Yes \text{ for } P\}$
+
+The set $W_P$ is called the *membership set* of $P$. Furthermore, we denote $\bar{W_P}$ as the set of points in $\mathbb{R}^n$ for which the answer is $No$. Formally, we can define $\bar{W_P}$ as $\bar{W_P} := \mathbb{R}^n \setminus W_P$
+
+
+
+##### Definition (45)
+
+For a decision problem $P$ with input $x_1, x_2, ..., x_n \in \mathbb{R}$ and membership set $W_P$ we denote the number of disjoint connected components of $W_P$ by $\#(W_P)$ and the number of disjoint connected components of $\bar{W_P}$ by $\bar{\#(W_P)}$.
+
+
+
+#### Linear Tree
+
+In a linear decision tree at every internal node $v$ the predicate 
+- $f_v(x_1, x_2, ..., x_n)  \hspace{0.5cm} ?  \hspace{0.5cm} 0$ 
+
+corresponds to
+
+- $a_0 + a_1 x_1 + a_2 x_2 + ... + a_n x_n  \hspace{0.5cm} ?  \hspace{0.5cm} 0$
+
+Hence, every internal nodes defines a hyper-plane and we branch at that node depending on whether the input point is above, below, or on this hyper-plane
+
+
+
+**Putting a lower bound on the height of the decision tree**
+
+To investigate how complicated a problem is we need to identify how many comparisons are required to "solve" a problem.  Since we branch at every node, we need to look into the height of the decision tree.
+
+Now, let's consider the set $R(v) \subseteq \mathbb{R}^n$ of points of $\mathbb{R}^2$ that reach some particular node $v$ of a linear decision tree. The set $R(v)$ contains all the points that satisfy a set of linear equalities and inequalities. Hence, $R(v)$ forms a convex polyhedron.
+
+Next, we can conclude that every leaf $v$ of a linear decision tree corresponds to a convex set and connected set $R(v) \subseteq \mathbb{R}^n$. (By definition: A convex set is connected. And the intersection of two convex sets is
+convex.)
+
+Hence, every disjoint connected component of $W_p$ or $\bar{W_P}$ corresponds to one unique leaf of the decision tree. This implies a lower bound of $\#W_P + \bar{\#W_P}$ on the height of the decision tree and, therefore, also on the minimum number of comparisons that any decision algorithm which uses linear decisions has to make in the worst case.
+
+
+
+##### Theorem (46): Dobkin & Lipton
+
+The height $h$ of a linear decision tree is $h \geq log(\#W_P + \bar{\#W_P})$.
+
+
+
+##### Theorem (47): Petrovskii & Oleinik, Thom, Milnor
+
+Given a decision problem $P$ with $n$ variables. We get for the height $h$ of an algebraic decision tree of degree $d \geq 2$ that solves $P$:  $\hspace{1cm} h = \Omega(log_d(\#W_P + \bar{\#W_P})-n)$
+
+
+
