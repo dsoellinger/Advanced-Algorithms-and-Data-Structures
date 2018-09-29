@@ -455,3 +455,74 @@ Every leaf node is associated with $Yes$ and $No$, depending on the correct answ
 
 
 
+##### Theorem (49)
+
+Given a decision problem $P$ on $n$ variables. If we exclude all intermediate nodes which correspond to additions,, substractions and multiplications by constants then we get for the height $h$ of an algebraic computation tree that solves $P$:
+
+$\hspace{1cm} h = \Omega(log(\#W_P + \bar{\#W_P})-n)$$
+
+
+
+#### Proofing a lower bound for ELEMENTUNIQUENESS
+
+
+
+The following algorithm can solve ELEMENTUNIQUENESS without sorting the input first:
+
+$\hspace{3cm} \prod_{1 \leq i \leq j \leq n} (x_i - x_j) \hspace{0.2cm} ?= 0$
+
+
+
+**Case study if $n=3$:**
+
+First, let's investigate our problem for $n=3$:
+
+- $x_1 < x_2 < x_3​$
+- $x_1 < x_3 < x_2$
+- $x_2 < x_1 < x_3$
+- $x_2 < x_3 < x_1$
+- $x_3 < x_1 < x_2$
+- $x_3 < x_2 < x_1$
+
+If any of these inequalities is true, then all numbers are different and the answer to our decision problem is $No$. 
+
+In other words, the subset $\bar{W_P}$ of $\mathbb{R}^3$ for which the answer is $No$ :
+
+$\hspace{3cm} \bar{W_P} := \cup_{\pi \in S_3} \bar{W_{\pi}}$
+
+with $\bar{W_{\pi}} := \{ (x_1, x_2, x_3) \in \mathbb{R}^3: x_{\pi(1)} < x_{\pi(2)} < x_{\pi(3)}\}$
+
+Hence, for $n=3$ the number of disjoint connected components $\#\bar{W_P} = 6$ because each permutation $\pi$ results in its own connected component.
+
+
+
+**The general case:**
+
+We have know shown that $n=3$ leads to $6$ disjoint connected components.  However, to make sure that it suits for our problem, we need to generalize it. In fact, we need to show that every subset in $\bar{W_P}$ forms its own disjoint connected component.
+
+- Let $\pi, \sigma \in S_n$ with $\pi \neq \sigma$. For $1 \leq i, j \leq n$ we define $f_{ij}(x_1, x_2, ..., x_n) := x_i - x_j$
+
+- We can conclude that since $\pi \neq \sigma$, there exists $i \neq j$ such that 
+
+  $f_{ij} > 0$     for all $p \in \bar{W_{\pi}}$      but $f_{ij}(p) < 0$    for all $p \in \bar{W_{\sigma}}$
+
+- Are these points part of the same connect set? Let's recall what being in the same connected set actually means: It means that every point on a line connecting two points in a set is part of the connected set as well.
+
+  In our case, any path from a point in $\bar{W_{\pi}}$ to a point in $W_{\pi}$ must go through a point $q$ where $f_{ij}(q)=0$.
+
+  But we know that $q \in \bar{W_P}$. Hence,  $\bar{W_{\pi}}$ and  $\bar{W_{\sigma}}$ lie in two different connected components if $\pi \neq \sigma$.
+
+- Since $|S_n| = n!$, we know that $\#\bar{W_P} \geq n!$
+
+
+
+Finally, we can now conclude that the height $h$ of an ADT/ACT is $h = \Omega(log(n!) - n)$ 
+
+This also means that $\Omega(log(n)!) = \Omega( n \cdot log(n))$ comparisons are necessary to solve ELEMENTUNIQUENESS in any ADT/ACT of fixed maximum degree for $n$ input numbers.
+
+
+
+
+
+
+
