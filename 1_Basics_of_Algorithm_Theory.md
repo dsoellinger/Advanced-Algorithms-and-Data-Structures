@@ -616,6 +616,28 @@ A solution to MAXGAP for $n$ numbers requires $\Omega(n \cdot log(n))$ time in t
 
 
 
+#### Adversary Strategy
+
+*Adversary strategies* are used to come up with a "model" of the worst case. To get an understanding of how this works we take a closer look at our SORTING problem.
+
+Let's consider two player $A$ and $B$ who play the following game: $A$ thinks of $n$ distinct real numbers and $B$ tries to sort those number by comparing paris of two numbers. To accomplish that $B$ is allowed to ask questions of the form "Is the third number greater than the fifth number?" $A$ needs to answer truthfully and consistently, but he's allowed to make $B$'s life as hard as possible. In other words, he is allowed to replace his originally chosen $n$ numbers by new n-tuple at any time, provided that the new numbers are consistent with the answers that $A$ has given so far.
+
+What is a lower bound on the number of comparisons that $A$ can force $B$ to make?
+
+**Strategy:**
+
+We assume that $A$ stores the $n$ numbers in an array a[1,...,n] and that $B$ will sort the numbers by comparing some element a[i] to some other element a[j] by asking $A$ whether a[i] < a[j].
+
+Since the adversary $A$ is allowed to pick the input, the adversary $A$ keeps a set $S$ of permutations that are consistent with the comparisons $B$ has made so far.
+
+The answer of $A$ to a comparison "Is a[i] < a[j]?" is chosen as follows:
+- Let $Y \subset S$ be those permutations that have remained in $S$ and that are also consistent with a[i] < a[j].
+- Furthermore, $N := S \ Y$
+- If $|Y| \geq |N|$ then the adversary $A$ perfers to answer "yes" and then replaces $S$ by $Y$.
+- Otherwise, "no" is answered and $S$ is replaced by $N$.
+
+
+
 
 
 
