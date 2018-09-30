@@ -522,6 +522,108 @@ This also means that $\Omega(log(n)!) = \Omega( n \cdot log(n))$ comparisons are
 
 
 
+#### Theorem (50)
+
+A comparison-based solution of ELEMENTUNIQUENESS for $n$ real numbers requires $\Omega(n \cdot log(n))$ comparisons.
+
+
+
+#### Corollary (51)
+
+A comparison-based SORTING of $n$ real numbers requires $\Omega(n \cdot log(n))$ comparisons.
+
+
+
+#### Corollary (52)
+
+A solution to CONVEXHULL computation requires $\Omega(n \cdot log(n))$ time in the ACT model in the worst case for $n$ points.
+
+
+
+#### Corollary (53)
+
+A solution to CLOSESTPAIR requires $\Omega(n \cdot log(n))$ time in the ACT model in the worst case for $n$ points.
+
+
+
+#### Proofing a lower bound for MAXGAP and UNIFORMGAP
+
+
+
+##### Problem: MAXGAP
+
+**Given:** A set of $S$ of $n >2$ distinct (unsorted!) real numbers.
+
+**Compute:** The maximum gap $\delta$ among the sorted numbers of $S$.
+
+​                    $\delta := max\{y-x: x,y \in S \and x < y \and \neg (\exists z \in S: x < z < y)\}$
+
+
+
+##### Problem: UNIFORMGAP
+
+**Given:** A set $s := \{ x_1, x_2, ..., x_n\}$ of $n>2$ distinct (unsorted!) real numbers and $\delta \in \mathbb{R}^+$.
+
+**Decide:** Is the gap between the sorted numbers of $S$ uniformly $\delta$?
+
+​                $\exists \pi \in S_n$          $x_{\pi(i+1)} = x_{\pi(i)} + \delta$         for all $i \in \{1,2,...,n-1\}$
+
+
+
+##### Proofing the lower bound for UNIFORMGAP
+
+We first start by defining the membership set $W_P$ which includes all points for which the result of the ACT would be $Yes$.
+
+The membership set is given by $W_P := \cup_{\pi \in S_n} W_\pi$
+
+with $W_\pi := \{ (x_1, x_2, ..., x_n\}) \in \mathbb{R}^n: x_{\pi(i+1) = x_{\pi(i)}+\delta}$ for all $i \in \{ 1,2, ..., n-1\}$
+
+
+
+We now consider the function $f_{ij} := x_i - x_j$   for   $1\leq i, j \leq n$.
+
+For $\pi, \delta \in S_n$:  If $\pi \neq \sigma$ then at least one $f_{ij}$ must take different signs over $W_\pi$ and $W_\delta$.
+
+Hence, any path leading from a point $W_\pi$ to a point in $W_\delta$ mast pass through a point $p$ of $\mathbb{R}^n$ with $f_{ij}(p)=0$. However, $p \notin W$ since $\delta$ is a real positive number. Therefore, the distance between two elements $x_i$ and $x_j$ can never be $0$.
+
+Therefore, we can conclude that $W_\pi$ and $W_\sigma$ form different connected components of $W$ if $w \neq \delta$.
+
+Since $|S_n| = n!$, we get $\#W_P \geq n!$ which establishes the lower $\Omega(n \cdot log(n))$ lower bound.
+
+
+
+##### Theorem (54)
+
+A solution to UNIFORMGAP for $n$ numbers requires $\Omega(n \cdot log(n))$ time in the ACT model.
+
+
+
+##### Proofing the lower bound for MAXGAP
+
+We can show a lower bound for MAXGAP by reducing UNIFORMGAP to MAXGAP.
+
+Given an instance $\{x_1, x_2, ..., x_n\}$ and $\delta$ of the UNIFORMGAP problem. We first use MAXGAP algorithm to compute the maximum gap $\Delta$ of $n$ numbers.
+
+If $\Delta \neq \delta$ then the answer is No. Otherwise, we compute $x_{min} := min \{x_1, x_2, ..., x_n\}$  and $x_{max} := max \{x_1, x_2, ...,x_n\}$ and check whether $x_{max}  - x_{min} = (n-1) \cdot \delta$.
+
+Obviously, this algoirthm solves UNIFORMGAP in $O(n)$ time plus the time consumed by the MAXGAP algorithm.
+
+
+
+##### Corollary (55)
+
+A solution to MAXGAP for $n$ numbers requires $\Omega(n \cdot log(n))$ time in the ACT model.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
