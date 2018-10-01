@@ -632,20 +632,204 @@ Since the adversary $A$ is allowed to pick the input, the adversary $A$ keeps a 
 
 The answer of $A$ to a comparison "Is a[i] < a[j]?" is chosen as follows:
 - Let $Y \subset S$ be those permutations that have remained in $S$ and that are also consistent with a[i] < a[j].
-- Furthermore, $N := S \ Y$
-- If $|Y| \geq |N|$ then the adversary $A$ perfers to answer "yes" and then replaces $S$ by $Y$.
+- Furthermore, $N := S \setminus Y$
+- If $|Y| \geq |N|$ then the adversary $A$ prefers to answer "yes" and then replaces $S$ by $Y$.
 - Otherwise, "no" is answered and $S$ is replaced by $N$.
 
+This strategy allows $A$ to **keep at least half of the permutations** after every comparison of the algorithm $B$.
+
+Player $B$ cannot declare the order of the numbers to be known as long as $|S| > 1$.
+
+Thus, $B$ needs at least $\Omega(log(n!)) = \Omega(n \cdot log(n))$ comparisons which establishes the lower bound sought.
+
+
+
+#### Amortized Analysis
+
+Amortized analysis is a worst-case analysis of a sequence of different operations performed on a data structure or by an algorithm. It's applied if a costly operation cannot occur for a series of operations in a row. With traditional worst-case analysis, the resulting bound on the running time of such a sequence of operations is too pessimistic if the execution of a costly operation only happens after many cheap operations have already been carried out.
+
+The goal of amortized analysis is to obtain a bound on the overall or average cost per operation in the sequence which is tighter than what can be obtained by separately analyzing each operation in the sequence.
+
+**Amortized analysis**, therefore, considers arbitary sequences and, in particular, worst-case sequences. It gives genuine upper bounds: The amortized cost per operation times the number of operations yields to a worst-case bound on the total complexity of those operations. This guarantees the average performance of each operation in the worst case.
+
+Note that an **average-case analysis** typically averages over the input and depends on assumptions on probability distributions to obtain an *estimated cost* per operation.
+
+##### Dynamic Array
+
+- A *dynamic array* is a data structure of variable size that allows to store and retrieve elements in a random-access mode.
+- Elements can also be inserted at and deleted from the end of the array.
+- The size of the array is not fixed. New memory can be allocated at any time
+- Simple realization of a dynamic array: Use array of fixed size and reallocate whenever needed to increase (or decrease) the size of the array.
+  - Size: Number of contiguous elements stored in the dynamic array
+  - Capacity: Physical size of the underlying fixed-size array
+- Insertion of an element at the end of the array:
+
+  - Constant-time operation if the size is less than the capacity
+  - Costly if the dynamic array needs to be resized since this involves allocating a new underlying array and copying each element from the original array
+
+
+
+###### A simple resizing strategy
+
+Suppose that the initial capacity of the array is 1. A simple strategy for increasing the capacity would be to increase the capacity whenever the size of the array gets larger than its capacity.
+
+In the worst case, a sequence of $n$ array operations consists of only insertations at the end of the array, at a cost of $k$ for the insertion of the $k-th$ element into an array of size $k-1$.
+
+Hence, we get $1+2+...+n = \frac{n(n+1)}{2} \in O(n^2)$ as total worst-case complexity for $n$ insert operations.
+
+
+
+###### An improved resizing strategy
+
+To avoid the costs of frequent resizing we expand the array by a constant factor $\alpha$ whenever we run out of space. For example, we could double its size.
+Amortized analysis allows to show that the (amorized) cost per array operation is reduced to $O(1)$. Please note, that the best value for the growth factor is a topic of frequent discussions.
+
+**Example:**
+- C++ std:vector
+  - GCC 5.2: $\alpha=2$
+  - Microsoft VC++: $\alpha=\frac{3}{2}$
+
+- Java ArrayList: $\alpha = \frac{3}{2}$
+
+
+##### Amortized cost
+
+The *amortized cost* of one operation out of a sequence of operations (for some $n \in \mathbb{N}$) is the total (worst-case) cost for all operations divided by $n$.
+
+
+
+**IMPORTANT:** Even if the amortized cost of one opreation is $O(1)$, the worst-case cost of one particular operation may be substantially greater!
+Hence, studying amortized costs might not be good enough when a guaranteed low worst-case cost per operation is required, for instance, in case of real-time or parallel systems.
+
+
+
+##### Method: Aggregate method for analyzing dynamic arrays
+
+Aggregate analysis determines an upper bound $U(n)$ on the total cost of a sequence of $n$ operations. Then the amortized cost per operation is $U(n)/n$. This means that all types of operations performed in the sequence have the same amortized cost.
+
+- Suppose that the initial capacity of the array is 1.
+
+- The cost $c_i$ of the i-th insertion is
+
+  $c_i = \begin{cases} i \hspace{1cm}\text{ if } i-1 \text{ is a power of 2}\\ 1 \hspace{1cm} \text{otherwise}\end{cases}$
+
+- Hence, we get for the cost of $n$ insertions
+
+​	$U(n) = \sum_{i=1}^n c_i = (\sum_{i=1; (i-1) \text{ is no power of  2}}^n 1) + \sum_{i=1; (i-1) \text{ is power of  2}}^n i)$
+
+​	$= (\sum_{i=1; (i-1) \text{ is no power of } 2}^n 1) + \sum_{i=1; (i-1) \text{ is power of } 2}^n (i-1)+1)$
+
+​	$= n + \sum_{i=1; (i-1) \text{ is power of  } 2}^n (i-1)$
+
+​	$= n + \sum_{i=0; i \text{ is power of } 2}^{n-1} (i)$
+
+​	$= n + \sum_{i=0; i \text{ is power of } 2}^{n-1} (i)$
+
+​	$= n + \sum_{i=0}^{\lfloor{ld(n-1) \rfloor}} 2^i \leq n + \sum_{i=0}^{\lfloor{ld(n) \rfloor}} 2^i $ 
+
+​	$= n + 2^{\lfloor log(n) \rfloor+1} -1 \leq n + 2 \cdot 2^{log(n)} = n + 2n = 3n$
+
+- Therefore, the amortized cost per (insertion) opreation is $\frac{U(n)}{n} = \frac{3n}{n} \in O(1)$
+
+
+
+##### Method: Accounting Method
+
+One of the main shortcomings of aggregate analysis is that different types of operations are assigned the same amortized cost.
+As a natural improvement, one might want to assign different costs to different operations. The accouting method (aka banker's method) assigns charges to each type of operation. 
+
+In contrast, the accounting method seeks to find a payment of a number of extra time units charged to each individual operation such that the sum of the payments is an upper bound on the total actual cost. Intuitively, one can think of maintaining a bank account. Low-cost operations are charged a little bit more than their true cost, and the surplus is deposited into the bank account for later use. High-cost operations can then be charged less than their true cost, and the deficit is paid for by the savings in the bank account. In that way we spread the cost of high-cost operations over the entire sequence. The charges to each operation must be set large enough that the balance in the bank account always remains positive, but small enough that no one operation is charged significantly more than its actual cost.
+
+To get a better understand of how the accounting method works we will now analyze the dynamic array using this banker's method.
+
+Say it costs 1 unit to insert an element and 1 unit to move it when the table is doubled. Clearly a charge of 1 unit per insertion is not enough, because there is nothing left over to pay for the moving. A charge of 2 units per insertion again is not enough, but a charge of 3 might be.
+
+Therefore, we try to set the charge $c_i'$ for the i-th operation to 3 if its an insertion.
+
+
+
+**NO DEBT!**
+
+Denote the (real) cost of the i-th operation by $c_i$ and the amortized cost by $c_i'$. Then we require
+
+$\sum_{i=1}^n c_i \leq \sum_{i=1}^n c_i'$
+
+for every $n \in \mathbb{N}$ and every sequence of $n$ operations.
 
 
 
 
+**Example:**
+
+1. Insert
+    Charge: 3	Cost: 1		Bank account: 2		Capacity: 1		Space left: 0
+2. Insert
+    Charge: 3	Cost: 2		Bank account: 3		Capacity: 2		Space left: 0
+3. Insert
+    Charge: 3	Cost: 3		Bank account: 3		Capacity: 4		Space left: 1
+4. Insert
+    Charge: 3	Cost: 1		Bank account: 5		Capacity: 4		Space left: 0
+5. Insert
+    Charge: 3	Cost: 5		Bank account: 3		Capacity: 8		Space left: 3
+6. Insert
+    Charge: 3	Cost: 1		Bank account: 5		Capacity: 8		Space left: 2
+7. Insert
+    Charge: 3	Cost: 1		Bank account: 7		Capacity: 8		Space left: 1
+8. Insert
+    Charge: 3	Cost: 1		Bank account: 9		Capacity: 8		Space left: 0
+9. Insert
+    Charge: 3	Cost: 9		Bank account: 3		Capacity: 16		Space left: 7
+10. Insert
+    Charge: 3	Cost: 1		Bank account: 5		Capacity: 16		Space left: 6
 
 
 
+**Formal proof:**
+
+We know need to proof formally that the bank account is always positive after the insertion of the i-th element, for all $i \in \mathbb{N}$.
+
+**I.B.:** 
+​	For $i=1$ there is one element in the array and $c_1' - c_1 = 2$ in the bank account.
+​	For $i=2$ we have two elements in the array and $2+3-2=3$ in the bank account.
+
+**I.H.:** The bank account is positive after the insertion of the i-th element, for some arbitary but fixed $i \in \mathbb{N}$ with $i \geq 2$.
+
+Suppose that $i = 2^k$ for $k \in \mathbb{N}$. 
+By the I.H. we know that the bank account was not negative when we double from a capacity of $2^{k-1}$ to $2^k$. After doubling we insert $2^k - 2^{k-1} = 2^{k-1}$ elements into the table of capacity.  After the $2^{k-1}$ inserts we have at least $2 \cdot 2^{k-1} = 2^k$ "coins" on the bank account. Resizing the array from $2^{k}$ to $2^{k+1}$ requires to move $2^k$ elements. This can be accomplished by the $2^k$ coins on the bank account. The new charge ensures that we have at least $-1=2$ coins on the bank account after the insertion of element with number $i+1 = 2^k+1$.
 
 
 
+##### Method: Potential Method
+
+In case of the potential method we define a so-called *potential function* $\phi: \{A_i: 0 \leq i \leq n \} \rightarrow \mathbb{R}$ for a sequence of $n$ operations. The function needs to preserve the following properties:
+- $\phi(A_0) = 0$
+- $\phi(A_i)  \geq 0$ for all $i \in \mathbb{R}$
+
+Intuitively, the potential function will keep track of the precharged time at any point in the computation. It measures how much saved-up time is available to pay for expensive operations. It is analogous to the bank balance in the banker's method. But interestingly, it depends only on the current state of the data structure, irrespective of the history of the computation that got it into that state.
+
+We determine the amortized costs $c_i'$ as follows:    $c_i' := c_i +\Delta \phi_i$
+
+The charge of the i-th operation $\Delta \phi_i$ can be computed as follows: $\Delta \phi_i := \phi(A_i) - \phi(A_{i-1})$
+
+
+If we consider a sequence of $n$ operations of cost $c_0$, $c_1$, $c_2$, ... that produces data structures $A_0$, $A_1$, etc. then the total amortized cost of $n$ operations is
+
+$\sum_{i=1}^n c_i' = \sum_{i=1}^n (c_i + \phi(A_i) - \phi(A_{i-1})) = (\phi(A_n) - \phi(A_0)) + \sum_{i=1}^n c_i \geq \sum_{i=1}^n c_i$
+
+This, if $\phi(A_i) \geq 0$ for all $n \in \mathbb{N}$ and $\phi(A_0) = 0$ then the total amortized costs are an upper bound on the total true costs.
+
+But how to choose a proper potential function? It is obvious that a elaborate and clever choice of the potential function is a prerequisite for achieving a tight bound. Unfortunately, good potential functions tend to be hard to find . . .
+
+
+**Example:**
+
+For analyzing our dynamic array with the potential method we define the potential as follows:
+
+$\phi(A_i) := 2i - 2^{\lceil log(i) \rceil}$  for $i \in \mathbb{N_0}$                          Note that we interprete $2^{log 0}$ as $0$.
+
+However, before we study the amortized costs is always good to verify that it preserves the properties required by the a potential function. In other words, $\phi(A_0)$ needs to be $0$ and $\phi(A_i)$ needs to be greater or equal to $0$.
+
+- $\phi(A_0) := 2 \cdot 0 - 2^{\lceil log(i) \rceil}
 
 
 
