@@ -829,8 +829,50 @@ $\phi(A_i) := 2i - 2^{\lceil log(i) \rceil}$  for $i \in \mathbb{N_0}$          
 
 However, before we study the amortized costs is always good to verify that it preserves the properties required by the a potential function. In other words, $\phi(A_0)$ needs to be $0$ and $\phi(A_i)$ needs to be greater or equal to $0$.
 
-- $\phi(A_0) := 2 \cdot 0 - 2^{\lceil log(i) \rceil}
+- $\phi(A_0) := 2 \cdot 0 - 2^{\lceil 0\rceil}$
+- $\phi(A_i) = 2i - 2^{\lceil log(i) \rceil} \geq 2i - 2^{1+log(i)} = 2i + 2^1 \cdot 2^{log(i)} = 2i - 2i = 0$
+
+Finally, we are ready to calculate the amortized cost for dynamic array insertion.
+
+Recall: $c_i = \begin{cases} i \hspace{1cm} \text{if } i-1 \text{ is a power of 2} \\ 1 \hspace{1cm} \text{otherwise}\end{cases}$
+
+Amortized cost of the i-th insertion:
+
+$c_i' = c_i + \Delta \phi_i = c_i + \phi(A_i) - \phi(A_{i-1})$
+
+$c_i' = c_i + (2i - 2^{\lceil log(i) \rceil}) - (2(i-1)-2^{\lceil log(i-1) \rceil}) = c_i + 2 - 2^{\lceil log(i) \rceil} + 2^{\lceil log(i-1) \rceil}$
 
 
 
+**Case $i-1=2^k$**:
+Then $\lceil log(i) \rceil = k+1$ and we get: $c_i' = (2^k+1) + 2 - 2^{k+1} + 2^k = 3$
 
+**Case $2^{k-1} < i-1 < 2^k$:**
+Then $\lceil log(i) \rceil = \lceil log(i-1) \rceil = k$ and we get: $c_i' = 1 + 2 - 2^k + 2^k = 3$
+
+
+#### Amortized analysis of increments of a binary counter
+
+If we need to store a (possible large) binary counter then it is natural to resort to an array and let the array element A[i] store the i-th bit of the counter. The standard way of incrementing the counter is to toggle the lowest-order bit. If that bit switches to a 0 then we toggle the next higher-order bit, and so forth unitl the bit that we toggle switches to a 1 at which point we can stop.
+
+**What is the complexity of $n$ increment operations?**
+- If we have $n$ operations on a k-bit counter then the overall complexity is at most $O(k \cdot n)$. Note that, possibly $k >> n$.
+
+- We can improve this boundary if we take into account that the $i$-th increment is the number $i$. Hence, after $n$ increments at most $O(log(n))$ bits can have been toggled per increment, yielding a total of $O(n \cdot log(n))$ bits that need to be toggled.
+
+
+**Amortized Analysis:**
+
+When does the i-th bit need to be toggled?
+
+- A[1] is toggled very time
+- A[2] is toggled every second time
+- A[3] is toggled very fourth time
+
+In general this means that A[i] is toggled $\lfloor \frac{n}{2^{i-1}} \rfloor$ many times.
+
+Analyzing the data structure by means of the aggregate method leads to the following result:
+
+$\sum_{i=1}^n \lfloor \frac{n}{2^{i-1}}\rfloor = \sum_{i=0}^{n-1} \lfloor \frac{n}{2^i} \rfloor \leq  n \cdot \sum_{i=0}^{n-1} \frac{n}{2^i} \leq  n \cdot \sum_{i=0}^{\infty} \frac{1}{2^i} = 2n$
+
+Hence, we get 2 as the amortized cost of one increment.
