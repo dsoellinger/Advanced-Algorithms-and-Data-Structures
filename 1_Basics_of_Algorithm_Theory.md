@@ -876,3 +876,85 @@ Analyzing the data structure by means of the aggregate method leads to the follo
 $\sum_{i=1}^n \lfloor \frac{n}{2^{i-1}}\rfloor = \sum_{i=0}^{n-1} \lfloor \frac{n}{2^i} \rfloor \leq  n \cdot \sum_{i=0}^{n-1} \frac{n}{2^i} \leq  n \cdot \sum_{i=0}^{\infty} \frac{1}{2^i} = 2n$
 
 Hence, we get 2 as the amortized cost of one increment.
+
+
+
+#### Practical relevance of log-terms
+
+Since $2^{20}=1 048 576$ and $2^{25}=33 554 432$, in most applications the value of $log(n)$ will hardly be significantly greater than 25 for practically relevant values.
+Hence, shaving off a log-term might constitute an important accomplishment
+when seen from a purely theoretical point of view, but its practical impact is likely
+to be much more questionable. In particular, multiplicative constants hidden in the O-terms may easily diminish the actual difference in speed between, say, an $O(n)$-algorithm and an
+$O(n \cdot log(n))$-algorithm.
+
+
+
+**IMPORTANT!**
+Do not rely purely on experimental analysis to “detect” a log-factor: The difference
+between log(1 024) = log 2 10 and log(1 048 576) = log 2 20 is just a multiplicative
+factor of two!
+
+
+
+#### Impact of Compile-Time Optimization
+
+Optimizing compilers try to minimize important characteristics of a program, such
+as its CPU-time consumption. Typically, heuristics are employed that transform a program to a (hopefully) sementically equivalent program since some problem related to code optimization are NP-complete or even undecidable.
+For instance, an optimizing compiler will attempt to keep frequently used variables in registers rather than in main memory. 
+
+**IMPORTANT!**
+In general, an optimized code will run faster. But optimization is not guaranteed to improve performance in all cases! It may even empede performance.
+
+
+
+#### Dealing with Floating-Point Computations
+
+The floating-point unit on x86 processors use 80bit registers and operators while standard "double" variables are stored in 64bit memory cells. Hence, rounding to a lower precision is necessary whenever a floating-point variable is transferred from register to memory. Optimizing compilers analyze code and keep variables within the registers whenever this makes sense without storing intermediate results in memory.
+
+Hence, the result of floating-point computations may depend on the compile-time options.
+
+
+<img src="images/floating_point.png" style="height:100px" />
+
+Theory tells us that we can approximate the first derivative $f'$ of a function $f$ at the
+point $x_0$ by evaluating $\frac{f(x_0+h)-f(x_0)}{h}$ for sufficiently small values of $h$.
+
+Consider $f(x) := x^3$ and $x_0 := 10$:
+
+<img src="images/floating_point_computations.png" style="height:200px" />
+
+
+
+This gap between the theory of the reals and floating-point practice has important and severe consequences for the actual coding practice when implementing (geometric) algorithms that require floating-point arithmetic:
+
+- The correctness proof of the mathematical algorithm does not extend to the program, and the program can fail on seemingly appropriate input data.
+- Local consistency need not imply global consistency
+
+**IMPORTANT:**
+Numerical analysis and adequate coding are a must when implementing algorithms that deal with real numbers. Otherwise, the implementation of an algorithm may turn out to be absolutely useless in practice, even if the algorithm (and even its implementation) would come with a rigorous mathematical proof of correctness!
+
+#### Impact of Cache Misses
+
+Today's computers perform arithmetic and logical operations on data stored in registers. In addition to main memory, data can also be stored in a Level 1 cache or a Level 2 cache. (Multi-core machines tend to have also L3 caches).
+
+Note that:
+- A cache is a fast but expensive memory which holds the values of standard memory locations.
+- If the CPU requests the value of a memory location and if that value is available in some level of cache, then the value is fetched from the cache, at a cost of a few cycles: **cache hit**
+- Otherwise, a block of consecutive memory locations is accessed and brought into the cache: **cache miss**
+- A cache miss is much costlier than a cache hit!
+
+Since the gap between CPU speed and memory speed gets wider and wider, good cache management and programs that exhibit good *locality* become increasingly more important.
+
+##### Impact on Matrix Multiplication
+
+In C/C++ elements within the same row of a matrix are stored in consecutive memory locations while elements in the same column are far apart in main memory.
+The standard implementation of matrix multiplication causes the elements of **A** and **C** to be accessed row-wise, while the elements of **B** are accessed by column. This will obviously result in a lot of cache misses if **B** is too large to fit into the (L2) cache.
+
+Hence, it makes sense to rewrite the standard multiplication algorithm ("ijk-order").
+Re-ordering of the inner loops will cause the matrices **B** and **C** to be accessed row-wise within the inner-most loop, while the indices, i, k of the (i,k)-th element of **AA** remain constant: "ikj-order"
+
+**IMPORTANT:**
+Algorithm engineering should be standard when designing and implementing an algorithm! Decent algorithm engineering may pay off more significantly than attempting to implement a
+highly complicated algorithm just because its theoretical analysis predicts a better
+running time.
+
