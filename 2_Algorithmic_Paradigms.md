@@ -297,7 +297,7 @@ Therefore, we first need to label the sets as follows:
 
 Let $x$ be the largest-possible number such that $i_1=j_1$, $i_2 = j_2$, ..., $i_x = j_x$ over all optimum solutions $j_1, j_2$, ..., $j_m$. Obviously, we have $x < m$.
 
-Next, we assume that there is a job $i_{x+1}$ that finishes before $j_{x+1}$. So, why not exchanging the job with $f_{j_{x+1}}$ of our optimum solution? Although, the optimum solution would remain optimal, it would violate the maximiality of $x​$.
+Next, we assume that there is a job $i_{x+1}$ that finishes before $j_{x+1}$. So, why not exchanging the job with $f_{j_{x+1}}$ of our optimum solution? Although, the optimum solution would remain optimal, it would violate the maximiality of $x$.
 
 The optimum solution still remains optimal, but it violates the maximality of $x$.
 
@@ -320,4 +320,69 @@ The optimum solution still remains optimal, but it violates the maximality of $x
 Assigning jobs to earliest start time allows to compute an optimum solution to ProcessorScheduling in $O(n \cdot log(n))$ time.
 
 
+
+#### Optimal Offline Caching
+
+Let's consider cache memory with a capacity to store $k$ items. A sequence of $n$ items arrive one after the other, where same item may arrive multiple times.
+
+- Every item is brought into the cache upon arrival unless it is already stored in the cache
+- If storing a newly arrived item would exceed the cache capacity then one item has to be evicted from the cache in order to free space for a new item: **cache miss**
+
+Consider a cache of capacity $2$ and the following sequence of items: a,b,c,b,c,a,a,b
+
+**Goal:** Minimize the number of cache misses
+
+**Note:** We differ between offline caching and online caching. For offline caching the sequence of the items to be stored is know prior to the arrival of the first item.
+
+
+
+##### Problem: OfflineCaching
+
+**Given:** A cache with capacity $k$ and a sequence of $n$ items which are to be stored in the cache.
+
+**Compute:** An eviction strategy that minimizes the number of cache misses.
+
+
+
+##### Caching / Eviction strategies
+
+- **Last in, first out (LIFO):** Evict item brought into cache most recently
+
+- **First in, first out (FIFO):** Evict item brought into cache least recently
+
+- **Least recently used (LRU):** Evict item whose most recent access was earliest
+
+- **Least frequently used (LFU):** Evict item that was least frequently requested
+
+- **Farthest in future (FF):** Evict item in the cache that is not requested until farthest in the future (Clairvoyant algorithm)
+
+
+**Note:** it is not easy to see that LIFO, FIFO, LRU and LFU need to form an optimum eviction strategy
+
+
+
+##### Lemma (69)
+
+There exists an optimum evication strategy that bring an item into the cache no earlier than at the item when it is requested.
+
+Note: Obviously, we do not gain anything by bringing an item into the cache at a time when the item is not requested.
+
+
+
+##### Theorem (70)
+
+The farthest-in-future strategy is an optimum evication strategy.
+
+
+
+##### Online caching
+
+- One of the most fundamental online problem of CS
+
+- LIFO can be arbitarily bad
+
+- LRU is k-competitive 
+
+
+**Note:** Competitive analysis compares the performance of an optimal online algorithm to an optimal offline algorithm. Thus, k-competitive means that there is an offline algorithm which performs at most k-times worse than an online algorithm
 
