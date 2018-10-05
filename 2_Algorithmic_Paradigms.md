@@ -386,3 +386,127 @@ The farthest-in-future strategy is an optimum evication strategy.
 
 **Note:** Competitive analysis compares the performance of an optimal online algorithm to an optimal offline algorithm. Thus, k-competitive means that there is an offline algorithm which performs at most k-times worse than an online algorithm
 
+
+
+### Divide & Conquer
+
+
+
+#### Basic principle
+
+Split the problem into sub-problems, recursively solve the sub-problems and then merge the solutions of the subproblems to obtain the solution for the original problem.
+
+**Note:** It's important to divide the jobs evenly. Nevertheless, we don't have to split every sub-problem at half. It's good enough to ensure that the size of every sub-problem is at most some constant fraction of the original problem size.
+
+#### Merge Sort
+
+```
+MergeSort( array A[], int low, int high):
+	int i
+	int middle
+	if (low < high):
+		middle = (low+high)/2
+		MergeSort(A, low, middle)
+		MergeSort(A, middle+1, high)
+		Merge(A, low, middle, high)
+```
+
+
+
+#### Fast exponentiation
+
+Suppose that we need to compute $a^n$ for some large $n \in \mathbb{N}$. 
+
+A naive recursive solution would look as follows:
+
+$a^n := \begin{cases} a \hspace{2.5cm} \text{if } n \text{ is odd} \ \\ a^{n-1} \cdot a \hspace{1.1cm} \text{if } n \text{ is even}\end{cases}$
+
+Obviously, this approach requires $n-1$ multiplications.
+
+
+
+We could also make use of the fact that $n = \lceil \frac{n}{2} \rceil + \lceil \frac{n}{2} \rceil$ and resort to exponentiation by squaring:
+
+$a^n := \begin{cases} a \cdot (a^{(n-1)/2})^2\hspace{1cm} \text{if } n \text{ is odd}  \\ (a^{1/2})^2 \hspace{2.5cm} \text{if } n \text{ is even}\end{cases}$
+
+This will consume $\theta(log(n))$ muplications since $n$ is at least halved during each call to exponentiation, at the cost of at most two muplications per call.
+
+
+
+**Example:** 
+
+a         a          a          a         a
+
+a         a       
+
+a
+
+
+
+#### Fast Matrix Multiplication
+
+**Recall:** If $A$, $B$ are two squared matrices of size $n$ x $nx$ then, $A \cdot B$ is the $n$ x $n$ matrix $C = [c_{ij}]$ whose (i,j)-th element $c_{ij}$ is defined by the formula:
+
+$\hspace{4cm} c_{ij} := \sum_{k=1}^n a_{ik} \cdot b_{kj} = a_{i1} b_{1j} + ... + a_{in} b_{nj}$
+
+Obviously, the multiplication of two $n$ x $n$ matrices results in $\theta(n^3)$ many arithmetic operations.
+
+
+
+##### Theorem (71)
+
+Seven multiplications of scalars suffice to compute the multiplication of two 2x2 matrices. In general, $O(n^{log_2(7)}) \approx O(n^2.807)$ arithmetic operations suffice for $n$ x $n$ matrices. The algorithm is called *Strassen Algorithm*.
+
+
+
+Strassen's algorithm is more complex and numerically less stable than the standard naive algorithm. But it is considerably more efficient for large $n$ ($n>100$). Although, it does not assume multiplication to be commutative and, thus, works over arbitrary rings.
+
+
+
+##### Example: Simple Divide & Conquer:
+
+- Divide matrices $A$ and $B$ in 4 sub-matrices of size $n/2$ x $n/2$ as shown in the below diagram.
+
+- Calculate following values recursively. ae + bg, af + bh, ce + dg and cf + dh.
+
+
+<img src="images/divide_and_conquer_matrix_mult_simple.png" width="400px" />
+
+
+
+As we can see we need to perform 8 multiplications and 4 additions.  Hence the complexity according to the Master theorem becomes:
+
+$T(N) = 8 T(N/2) + O(n^2)   \hspace{2cm} \rightarrow  \hspace{2cm} \theta(n^3)$
+
+
+
+##### Example: Strassen algorithm
+
+The idea of Strassen’s method is to reduce the number of recursive calls to 7. Strassen’s method is similar to above simple divide and conquer method in the sense that this method also divide matrices to sub-matrices of size $n/2$ x $n/2$.
+
+
+
+<img src="images/divide_and_conquer_strassen.png" width="400px" />
+
+Strassen's algorithm can multiply to matrices by means of 7 multiplications and 18 additions/substractions of $m$ x $m$ matrices.
+
+Obviously, one addition of two $m$ x $m$ matrices takes $O(m^2)$ time. Let $T(n)$ denote the number of (arithmetic) operations consumed by Strassen's algorithm for multiplying two $n$ x $n$ matrices. We get the following recurrence relation for $T$.
+
+$T(n) = 7 \cdot T(\frac{n}{2}) + O(n^2)$
+
+Hence, the Master Theorem yield $ T \in \theta(n^{log_2(7)}) \approx \theta(n^{2.807})$
+
+ 
+
+##### Further algorithms
+
+- Coppersmith & Winograd:	$O(n^{2.375})$
+- Stothers: $O(n^{2.37369})$
+- Williams: $O(n^2.37286)$
+
+The Coppersmith-Winograd algorithm and the more recent improvements are used frequently as building blocks in other algorithms to prove complexity bounds. Besides Strassen’s algorithm, these algorithms are of no practical value, though, since the cross-over point for where they would improve on the naive cubic-time algorithm is enormous.
+
+**Note:** Lower bound for fast matrix multiplication is still unknown.
+
+
+
