@@ -510,3 +510,89 @@ The Coppersmith-Winograd algorithm and the more recent improvements are used fre
 
 
 
+#### Closest Pair
+
+##### Problem: ClosestPair
+
+**Given:** A set $S$ of $n$ points in the Euclidean plane
+
+**Compute:** Those two points of $S$ whose mutual distance is minimumg among all pairs of points of S$.
+
+
+
+##### Lemma (75)
+
+ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot log(n))$.
+
+
+
+##### Proof: 1-D
+
+- Divide the points $S$ into two sets $S_11$, $S_2$ by some x-coordinate so that $p < q$ for all
+  $p \in S_1$ and $q \in S2$.
+- Recursively compute closest pair $(p_1, p_2)$ in $S_1$ and $(q_1, q_2)$ in $S_2$.
+- Let $\delta$ be the smallest separation so far: $\delta = min(|p_2-p_1|, |q_2-q_1|)$
+- The closest pair is $\{p_1, p_2\}$, or $\{q_1, q_2\}$, or some $\{p_3, q_3\}$ where $p_3 \in S_1$ and $q_3 \in S_2$.
+- If $m$ is the dividing coordinate, then $p_3$, $q_3$ must be within $\delta$ of $m$.
+- In 1D, $p_3$ must be the rightmost point of $S_1$ and $q_3$ the leftmost point of $S_2$. Howver, this does not generalize for higher dimensions.
+- At most one point can lie in the intervall $(m-\delta, m ]$. Same applies for $S_2$
+
+<img src="images/closest_pair_1d.png" width="400px" />
+
+
+
+**Recurrence:** $T(n) = 2T(n/2) + O(n)$
+
+
+
+##### Proof: 2-D
+
+- Partition $S$ into $S_1$, $S_2$ by vertical line $l$ defined by median x-coordinate in $S$.
+
+- Recursively compute closest pair distance $\delta_1$ and $\delta_2$.
+
+- Set $\delta = min(\delta_1, \delta_2)$
+
+- Compute the closest pair with one point each in $S_1$ and $S_2$
+
+
+
+  <img src="images/closest_pair_2d_1.png" width="300px" />
+
+- In each candidate pair $(p, q)$, where $p \in S_1$ and $q \in S_2$, the points $p$, $q$ must both lie within $\delta$ of $l$.
+
+- We show that points in $P_1$, $P_2$ ($\delta$ strip around) have a special structure, and solve the conquer step faster.
+
+- We show that points in $P_1$, $P_2$ ($\delta$ strip around) have a special structure, and
+  solve the conquer step faster.
+
+  Consider a point $p \in S_1$. All points of $S_2$ within distance $\delta$ of $p$ must lie in a $\delta$ x $2 \delta$ rectangle $R$.
+
+  All points of $S_2$ within distance $\delta$ of $p$ must lie in a $\delta$ x $2 \delta$ rectangle $R$.
+
+
+<img src="images/closest_pair_2d_2.png" width="200px" />
+
+​	How many points can be inside $R$ if each pair is at least $\delta$ apart? **At most 6!** 
+
+​        So, we only need to perform $6 \cdot n/2$ distance comparisons.
+
+
+
+**Complexity:**
+
+- Sorting according to x-coordinates takes $O(n \cdot log(n)$ time.
+
+- Splitting $n$ vertices at median x-coordinate takes $O(n)$ time
+
+- The distance computations take $O(1)$ time for each position of the sliding windows
+
+- Thus, all distance computations carried out during the conquer step run in $O(n)$ time
+
+- Merging the y-sorted points of the left and right sub-set takes $O(n)$ time
+
+- Hence, for the time complexity $T(n)$ we get
+
+  $T(n) = 2T(\frac{n}{2}) + O(n)$    resulting in $T \in O(n \log(n))$
+
+  and thus an overall $O(n \cdot log(n))$ time bound.
