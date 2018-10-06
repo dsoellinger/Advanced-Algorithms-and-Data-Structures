@@ -570,7 +570,6 @@ ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot l
 
   All points of $S_2$ within distance $\delta$ of $p$ must lie in a $\delta$ x $2 \delta$ rectangle $R$.
 
-
 <img src="images/closest_pair_2d_2.png" width="200px" />
 
 ​	How many points can be inside $R$ if each pair is at least $\delta$ apart? **At most 6!** 
@@ -596,3 +595,120 @@ ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot l
   $T(n) = 2T(\frac{n}{2}) + O(n)$    resulting in $T \in O(n \log(n))$
 
   and thus an overall $O(n \cdot log(n))$ time bound.
+
+
+
+### Dynamic Programming
+
+Dynamic programming (DP) is a technique for efficently implementing a recursive algorithm by storing results for sub-problems. It may be applicable if the naive recursive algorithm would solve the same sub-problem over and over again. In that case, storing the solution for every sub-problem in a table to look up instead of re-compute may lead to a more efficient algorithm. Of course, there is always a trade-off between space and time.
+
+If applicable, dynamic programing combines the best of both worlds for two common paradigms to solve optimization problems:
+
+- As a greedy algorithm it tends to be reasonably fast
+- As exhaustive search it will determine the true optimum
+
+
+
+#### Theorem (76)
+
+Dynamic programming allows to solve TSP for $n$ cities in $O(n^2 2^n)$ time.
+
+
+
+#### Fibonacci numbers
+
+The Fibonacci numbers are defined as follows:
+
+$F_n := \begin{cases} n \hspace{4cm} \text{if } n \leq 1 \\ F_{n-1}  + F_{n-2} \hspace{1.5cm} \text{if } n \geq 2 \end{cases}$
+
+
+
+**Example:** 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ...
+
+Since the Fibonacci numbers are defined recursively, a recursive computation scheme seems natural. Note that this requires Fibonacci numbers to be computed over and over again. For example, $F_{n-4} is computed five times from scratch.
+
+<img src="images/fibonacci_example.png" width="400px" />
+
+
+
+##### Lower bound
+
+$C(n) := C(n-1) + C(n-2) + c$
+
+$C(n)  := C(n-2) + C(n-3) + C(n-2) + c + c$
+
+$C(n) := 2C(n-2) + C(n-3) + a \geq 2C(n-2) + a$
+
+
+
+$C(n) := 2C(n-2) + a = 2(C(n-3) + C(n-4) + c) + a = 2C(n-3) + 2C(n-4) +a + a$
+$C(n) := 2(C(n-4) + C(n-5) + c) + 2C(n-4) +  a + a$
+$C(n) := 2C(n-4) + 2C(n-5) + 2c + 2C(n-4) + a + a$
+$C(n) := 4C(n-4) + 2C(n-5) + 2a + a$
+$C(n) \geq 4C(n-4)  + 2a + a$
+
+
+
+$C(n) := 4C(n-4) + 2a + a = 4(C(n-5) + C(n-6) + c) + 2a +a$
+$C(n) := 4C(n-5) + 4C(n-6) + 2a + 2a + a$
+$C(n) := 4(C(n-6) + C(n-7) + c) + 4C(n-6) + 2a + 2a + a$
+$C(n) := 4C(n-6) + 4C(n-7) + 4C(n-6) + 4a + 2a + a$
+$C(n) := 8C(n-6) + 4C(n-7) + 4a + 2a + a$
+$C(n) \geq 8C(n-6) + 4a + 2a + a$
+
+
+
+$C(n) := 2^b C(n-2b) + a(2^{b-1} + 2^{b-2}  + 2 + 1)$
+
+Substitution stops when $b = n/2$:
+
+$C(n) := 2^{n/2} C(0) + a(2^{b-1} + 2^{b-2}  + 2 + 1) \geq m \cdot 2^{n/2}$
+
+Hence, Fibonacci is in $\Omega(2^{n/2}) = \Omega(\sqrt{2}^n) \approx \Omega(1.41^n)$
+
+
+
+##### Upper bound
+
+We know that: $C(n-2) \leq C(n-1)$, $C(n-3) \leq C(n-2)$, ..., $T(n-k) \leq T(n-k+1)$
+
+$C(n) := C(n-1) + C(n-2) + c \leq 2C(n-1) + c$
+
+By substitution:
+
+$C(n) < 2^k \cdot C(n-k) + c \cdot (2^{k-1} + 2^{k-2} + ... + 2^2 + 2 +1)$
+
+Substitution stops when $n-k=1​$. Hence,  $k=n-1​$
+
+$C(n) := O(m \cdot 2^{n-1}) \leq O(m \cdot 2^n)$
+
+Hence, Fibonacci is in $O(2^n)$.
+
+
+
+ ##### Tight upper bound
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
