@@ -609,6 +609,36 @@ If applicable, dynamic programing combines the best of both worlds for two commo
 
 
 
+Note that Dynamic Programming may result in an efficient (sub-exponential) algorithm if the following conditions hold:
+
+- a solution can be computed by combining solutions of sub-problems
+
+- a solution of every sub-problem can be computed by combining solutions of sub-subproblems
+
+- only a polynomial number of sub-problems occurs in total
+
+
+**Different types**
+
+- Momoization (top down)
+
+  - Apply standard recursion, but remember the solution to a previously solved sub-problem
+  - Re-use solution whenever a sub-problem is encountered that has already been solved
+
+- Tabulation (bottom up)
+
+  - Build a table of solutions for the sub-problems in bottom-up fashion
+
+**Performance:**
+- If all subproblems must be solved at least once, a bottom-up dynamic-programming algorithm usually outperforms a top-down memoized algorithm by a constant factor.
+  - No overhead for recursion and less overhead for maintaining table
+  - There are some problems for which the regular pattern of table accesses in the dynamic-programming algorithm can be exploited to reduce the time or space requirements even further.
+- If some subproblems in the subproblem space need not be solved at all, the memoized solution has the advantage of solving only those subproblems that are definitely required
+
+**Complexity:** Roughly, we get the number of sub-problems times the complexity for solving every sub-problem
+
+
+
 #### Theorem (76)
 
 Dynamic programming allows to solve TSP for $n$ cities in $O(n^2 2^n)$ time.
@@ -686,13 +716,166 @@ Hence, Fibonacci is in $O(2^n)$.
 
 
 
- ##### Tight upper bound
+ ##### Tighter upper bound
+
+We can also show a tighter upper bound by means of the following lemma:
 
 
 
+**Lemma**
+
+For $n \in \mathbb{N}$ with $n \geq 2$:
+
+$F_n = \frac{1}{\sqrt{5}} \cdot (\frac{1+\sqrt{5}}{2})^n - \frac{1}{\sqrt{5}} \cdot (\frac{1-\sqrt{5}}{2}) ^n\geq (\frac{1+\sqrt{5}}{2})^{n-2}$
 
 
 
+$O(F_n)  = O(\frac{1}{\sqrt{5}} \cdot (\frac{1+\sqrt{5}}{2})^n) - O(\frac{1}{\sqrt{5}} \cdot (\frac{1-\sqrt{5}}{2})^n)$
+
+Hence, $C \in O(\phi^n)$ with the golden ratio $\phi := \frac{1+\sqrt{5}}{2}$
+
+
+
+##### Application of Dynamic Programming
+
+A simple button-up approach suffices to compute the n-th Fibonacci number in $O(n)$ steps (if we ignore the time needed to add large intergers).
+
+```
+fibonacci(int number):
+	n1 = 0
+	n2 = 0
+	tmp, i
+	for (i=1; i<number; ++i):
+		temp = n1 + n2
+		n1 = n2
+		n2 = temp
+	return n2
+```
+
+
+
+#### Matrix Chain Multiplication
+
+The standard method for multiplying a $p$ x $q$ matrix with a $q$ x $r$ matrix requires $p \cdot q \cdot r$ (scalar) multiplications and $p \cdot (q-1) \cdot r$ additions, yielding a result matrix of size $p \cdot r$.
+
+Recall that matrix multiplication is associative, but not commutative:
+
+$(A \cdot B) \cdot C = A \cdot (B \cdot C)$,       but, in general,   $A \cdot B \neq B \cdot A$
+
+Hence, if $A$ is a 100x1 matrix, $B$ is a 1x100 matrix, and $C$ is a 100x1 matrix, then
+
+- $(A \cdot B) \cdot C$ needs $(100 \cdot 1 \cdot 100) + (100 \cdot 100 \cdot) = 20000$ multiplications.
+
+- $A \cdot (B \cdot C)$ needs $(1 \cdot 100 \cdot 1) + (100 \cdot 1 \cdot ) = 200$ multiplications
+
+   
+
+Therefore, it's obvious that it may pay off to think about an optimal parenthesization.
+
+
+
+##### Problem: MatrixChainMultiplication
+
+**Given:** A sequence of $n$ matrices $A_1, A_2, ..., A_n$ where matrix $A_i$ has dimensions $d_{i-1}$ x $d_i$ for $i \in \{1, 2, ...,n\}$.
+
+**Compute:** An optimal parenthesization such that the standard computation of $A_1 \cdot A_2 \cdot ... \cdot A_n$ results in the minimum number of multiplications.
+
+
+
+We can split the product of matrices into two product by multiplying the first $k$ matrices, multiplying the second $n-k$ matrices and then multiplying the two resulting matrices:
+
+$\hspace{4cm} A_1 \cdot A_2 \cdot ... \cdot A_n = (A_1 \cdot ... \cdot A_k) \cdot (A_{k+1} \cdot ... \cdot A_n)$
+
+
+
+**Optimality Observation:**
+
+If an optimal solution for $A_i \cdot ... A_j$ is given by $(A_i \cdot ... \cdot A_k) \cdot (A_{k+1} \cdot ... \cdot A_j)$ for $1 \leq i \leq k < j \leq n$ then also the parenthesizations of $A_i \cdot ... \cdot A_k$ and $A_{k+1} \cdot ... \cdot A_j$ need to be optimal.
+
+
+
+##### Finding the optimal parenthesization by means of DP
+
+For $1 \leq i \leq j \leq n$ let $m[i,j]$ denote the minimum number of scalar multiplications needed to compute $A_i \cdot ... \cdot A_j$
+
+Recall that multiplying two matrices $A$ of size $p \cdot q$ and $B$ of size $q \cdot r$ results in a matrix of size $p \cdot r$.
+
+Hence, the following formula can be used to estimate the minimum number of multiplications for a sequence.
+
+$m[i,j] = \begin{cases} 0 \hspace{10cm} \text{if } i = j \\ min \{ m[i,k] + m[k+1, j] + d_{i-1} d_k d_j\} \hspace{1.6cm}\text{ if } i < j\end{cases}$
+
+
+
+**Algorithm:**
+
+```
+MatrixChainMultiplication(int d[], int s[]):
+	
+	int seq_len, cost
+	int N = d.length - 1
+	
+	for(i=1; i<=N; i++): 
+		m[i,i] = 0
+	
+	for (seq_len=2; i <= N - seq_len +1; ++i):
+		for (i=1; i<=N-seq_len+1; ++i):
+			j = i + seq_len - 1
+			m[i,j] = MAXINT
+			for(k=i; k <= j-1; ++k):
+				cost = m[i,k] + m[k+1,j] + d[i-1] * d[k] * d[j]
+				if (cost < m[i,j]):
+					m[i,j] = cost
+					s[i,j] = k
+	
+```
+
+
+
+Now, the perfect parenthesization can be extracted from s[]:
+
+```
+string GetParenthesization(int i, int j, int s[]):
+	if (i < j):
+		x = GetParenthesization(i, s[i,j], s)
+		y = GetParenthesization(s[i,j] + 1, j, s)
+		return "(x * y)"
+	else
+		return "A_" # IntToString(i)
+```
+
+
+
+##### Theorem (77)
+
+MatrixChainMultiplication can be solved in $O(n^3)$ time and $O(n^2)$ space for $n$ matrices.
+
+
+
+#### Minimum-Weight Triangulation
+
+
+
+##### Simple polygon
+
+A simple (closed) polygon with vertices $p_1, p_2, ..., p_n$ is a sequence of $n$ straight-line segments ("edges") $\bar{p_1 p_2}$, $\bar{p_2 p_3}$, ..., $\bar{p_n p_1}$ such that no two edges intersect except for subsequent edges sharing a common vertex.
+
+
+
+##### Diagonal
+
+A *diagonal* of a simple polygon $P$ with vertices $p_1, p_2, ..., p_n$ is a straight-line segment $\bar{p_i p_j}$ defined by two distinct and non-consecutive vertices $p_i$, $p_j$ of $P$ which lies completely within the area bounded by $P$.
+
+
+
+##### Triangulation
+
+A triangulation of a simple polygon $P$ with $n$ vertices is a partitioning of the area bounded by $P$ into $n - 2$ triangles by inserting $n-3$ diagonals which do not intersect each other except for possibly sharing common vertices of $P$.
+
+
+
+##### Problem: MinimumWeightTriangulation (MWT)
+
+**Given:** 
 
 
 
