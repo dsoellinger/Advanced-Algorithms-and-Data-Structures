@@ -875,23 +875,98 @@ A triangulation of a simple polygon $P$ with $n$ vertices is a partitioning of t
 
 ##### Problem: MinimumWeightTriangulation (MWT)
 
-**Given:** 
+**Given:** A simple polygon $P$ with $n$ vertices.
+
+**Compute:** A triangulation $T$ of $P$ such that the sum of the edge lengths of the diagonals of $P$ that induce $T$ is minimum over all triangulation of $P$.
 
 
 
+##### Optimality observation
+
+If we knew that a diagonal - say $v_2 v_5$ - occurs in a MWT of $P$, then we could obtain the full MWT by computing MWTs for the two sub-polygons induced by the diagonal.
+
+Again, simply enumerating all diagonals and recursively finding the MWT would be too costly.
 
 
 
+##### Lemma (81)
+
+Consider a $n$-vertex convex polygon $P$. Select on edge of $P$ and denote it by $r$. There is a bijection between the triangulations of $P$ and full binary trees with $n-1$ leaves if we match the edge $r$ with the root of the tree.
+
+**Proof:**
+
+- Every triangulation of $P$ corresponds to a unique full binary tree with $n − $1 leaves
+  such that the root of the tree corresponds to $r$. (Every triangle corresponds to
+  one inner node.)
+
+- Every full binary tree with $n − 1$ leaves corresponds to a unique triangulation of $P$
+  such that the root of the tree corresponds to the triangle attached to $r$ .
 
 
 
+<img src="images/minimum_weight_triangulation_1.png" width="500px" />
+
+<img src="images/minimum_weight_triangulation_2.png" width="500px" />
 
 
 
+##### Lemma (82)
+
+Consider an $n$-vertex convex polygon $P$. Select one edgje of $P$ and denote it by $r$. Label the other edges of $P$ by $A_1$, $A_2$, ..., $A_{n-1}$ in CCW order, start at $r$. Then there exists a bijection between the triangulations of $P$ and parenthesizations of the matrix chain product $A_1 \cdot A_2 \cdot ... \cdot A_{n-1}$.
+
+**Proof:**
+
+- Every triangulation of $P$ corresponds to a unique parenthesization of $A_1 \cdot A_2 \cdot ... \cdot A_{n-1}$.
+- Every parenthesization of $A_1 \cdot A_2 \cdot ... \cdot A_{n-1}$ corresponds to a unique triangulation of $P$.
 
 
 
+##### Detailed explanation 
+
+Our purpose is to find the triangulation of P that has the minimum total length. Namely, the total length
+of diagonals used in the triangulation is minimized. We would like to compute the optimal triangulation using divide and conquer. As the figure on the right demonstrate, there is always a triangle in the triangulation, that breaks the polygon into two polygons. Thus, we can try and guess such a triangle in the optimal triangulation, and recurse on the two polygons such created. The only difficulty, is to do this in such a way that the recursive subproblems can be described in succinct way.
+
+To this end, we assume that the polygon is specified as list of vertices 1 . . . n in a clockwise ordering. Namely, the input is a list of the vertices of the polygon, for every vertex, the two coordinates are specified. The key observation, is that in any triangulation of P, there exist a triangle that uses the edge
+between vertex 1 and n (red edge in figure on the left). In particular, removing the triangle using the edge 1− n leaves us with two polygons which their vertices are consecutive along the original polygon.
+
+Let M[i, j] denote the price of triangulating a polygon starting at vertex i and ending at vertex j, where every diagonal used contributes its length twice to this quantity, and the perimeter edges contribute their length exactly once. We have the following "natural" recurrence:
+
+$M[i,j] = \begin{cases} 0 \hspace{10.2cm} \text{if } i \leq j \\ 0 \hspace{10.2cm} \text{if } j = i +1 \\ min_{i<k<j} \Delta(i,j,k) + M[i,k] + M[k,j] \hspace{2cm} \text{otherwise} \end{cases}$
 
 
 
+Where $\Delta(i,j,k) = Dist(i,j) + Dist(j,k) + Dist(i,k)$.
 
+Note, that the quantity we are interested in is M[1, n], since it the triangulation of P with minimum total weight.
+
+Using dynamic programming (or just memoization), we get an algorithm that computes
+optimal triangulation in $O(n^3)$ time using $O(n^2)$ space.
+
+
+
+##### Theorem Hu&Shing (83)
+
+MinimumWeightTriangulation can be solved in $O(n \cdot log(n))$ time and $O(n)$ space for a convex polygon with $n$ verties.
+
+##### Corollary Hu&Shing (84)
+
+MatrixChainMultiplication can be solved in $O(n \cdot log(n))$ time and $O(n)$ space for $n$ matrices.
+
+
+
+##### Important:
+
+
+
+- Note that the following greedy approach need not yield the optimum:
+  - Select the cheapest diagonal.
+  - Recurse within the two sub-polygons induced.
+
+- However, this greedy approach gives a triangulation that is within a constant
+  factor of the optimum for convex polygons.
+
+- It is easy to extend the DP approach to general polygons while maintaining the
+  $O(n^3)$ worst-case complexity.
+- If we do not care about weights then a simple polygon can be triangulated in
+  linear time (Chazelle 1991)
+- Several practical algorithms that run in expected near-linear time are known.
