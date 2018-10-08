@@ -956,8 +956,6 @@ MatrixChainMultiplication can be solved in $O(n \cdot log(n))$ time and $O(n)$ s
 
 ##### Important:
 
-
-
 - Note that the following greedy approach need not yield the optimum:
   - Select the cheapest diagonal.
   - Recurse within the two sub-polygons induced.
@@ -970,3 +968,120 @@ MatrixChainMultiplication can be solved in $O(n \cdot log(n))$ time and $O(n)$ s
 - If we do not care about weights then a simple polygon can be triangulated in
   linear time (Chazelle 1991)
 - Several practical algorithms that run in expected near-linear time are known.
+
+
+
+#### Number of Full Binary Trees
+
+
+
+##### Theorem
+
+A full binary tree with $m$ internal nodes has $m+1$ leave nodes.
+
+**Proof by Induction:**
+
+**IH:** 
+
+​         $l_m = m+1$
+
+**IB:** 
+
+For the base case, if $I = 0$ then the tree must consist only of a root node, having no children because
+the tree is full. Hence there is 1 leaf node.
+
+**IS:**
+We need to show that $I_{m+1} = (m+1)+1 = m+2$.
+
+Let $T$ be a full binary tree with $m+1$ internal nodes. Then the root of $T$ can be split into two subtrees $L$ and $R$.
+
+Let's say that $L$ has $k$ internal nodes and therefore $R$ needs to have $(m+1)-k-1=m-k$ internal nodes.
+Please note that $m+1 = k + (m+1)-k-1 + 1$.
+
+Now, by the induction hypothesis $L$ must have $k+1$ leaves and $R$ must have $m-k+1$ leaves.
+$l_{m+1} = (k+1) + (m-k+1) = m+2 = (m+1)+1$
+
+​            
+
+##### Lemma (85)
+There are $C_m$ different full binary trees with $m+1$ leaves.
+
+**Proof:**
+
+For $m \in \mathbb{N}_0$ , let $T_m$ denote the number of different full binary trees with $m$
+internal nodes, i.e., with $m + 1$ leaves. Obviously, $T_0 = 1$.
+
+Now, consider a full binary tree with $m \geq 1$ internal nodes, and thus, $m+1$ leave nodes. 
+Such a tree consists of a left subtree with $k$ internal nodes and a right subtree with $m-1-k$ internal nodes, for some $k \in \{ 0,1, ..., m-1 \}$. For any fixed particular $k \in \{ 0,1,...,m-1\}$ we get $T_k$ different subtrees and $T_{m-1-k}$ different right subtrees.
+
+Hence, $T_m$ fulfilles the recurrence:
+
+$T_m = \sum_{k=0}^{m-1} T_k \cdot  T_{m-1-k}$        with $T_0=1$
+
+This is the recurrence for the Catalan numbers and we get $T_m = C_m$.
+
+
+
+<img src="images/full_binary_tree_Cm.png" width="200px" />
+
+
+
+##### Corollary (86)
+
+There are $C_{n-2}$ many different triangulations of convex polygon with $n$ vertices.
+
+**Proof:**
+
+A bijection between triangulations of a convex n-gon and full binary trees with $n-1$ leaves was established in Lemma 81.
+
+From Lemma 85 we know that there are $C_m$ different full binary trees with $m+1$ leaves.
+
+$n-1$ leaves = $(n-2)+1$ leaves
+
+$C_m = m+1 $
+
+$C_{n-2} = (n-2) + 1$
+
+
+
+##### Corollary (87)
+
+There are $C_{n-1}$ many different parenthesizations of the matrix chain product $A_1 \cdot A_2 \cdot  ... \cdot A_n$.
+
+**Proof:**
+
+A bijection between triangulations of a convex n-gon and parenthesizations of
+the matrix chain product $A_1 \cdot A_2 \cdot . . . A_{n−1}$ was established in Lem. 82.
+
+We transform the matrix chain product $A_1 \cdot A_2 \cdot ... \cdot A_{n}$ into a triangulation. The triangulation can be transformed in a full binary tree with $n$ leaves (Lemma 81).
+
+$n$ leaves = $(n-1)+1$ leaves
+
+$C_m = m+1$
+
+$C_{n-1} = (n-1)+1$
+
+
+
+##### Corollary (88)
+
+The numbers of different triangulations of a convex polygon with $n$ vertices and of different full binary trees with $n$ leaves are exponential in $n$.
+
+**Proof based on Lemma:**
+
+$C_n = \frac{1}{n+1} \sum_{i=0}^n \binom{n}{i}^2 = \frac{1}{n+1} \binom{2n}{n} \in \theta (\frac{4^n}{n^{1.5}})$
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
