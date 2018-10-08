@@ -1265,3 +1265,83 @@ Knuth Shuffle resolves both issues. It's complexity is $O(n)$ and all permutatio
 
 
 
+#### Randomized Quick Sort
+
+```
+void quicksort(array)
+    if length(array) > 1
+        pivot := select any element of array
+        left := first index of array
+        right := last index of array
+        while left ≤ right
+            while array[left] < pivot
+                left := left + 1
+            while array[right] > pivot
+                right := right - 1
+            if left ≤ right
+                swap array[left] with array[right]
+                left := left + 1
+                right := right - 1
+        quicksort(array from first index to right)
+        quicksort(array from left to last index)
+```
+
+
+
+##### Standard Quick Sort
+
+- $O(n^2)$ worst-case complexity, even when using median-of-three partitioning. The worst
+  case happens if the sizes of the subproblems are not balanced. The selection of the pivot element determines the sizes of the subproblems. It is thus crucial to select a "good" pivot.
+- One can specify worst-case input!
+- $O(n \cdot log(n))$ average-case complexity
+
+##### Randomized Quick Sort
+
+- $O(n \cdot log(n))$ expected-time complexity for all inputs of n numbers.
+
+- One can also generate a random permutation of the input numbers and then run the standard QuickSort on that shuffled array.
+
+
+##### Theorem (91)
+
+The expected number of comparisons made by a randomized QuickSort on an array of n input numbers is at most $2n ln(n)$.
+
+**Proof:**
+
+In the following, we prove that if the pivot is selected uniformly at random, the expected number of comparisons of this randomized version of Quicksort is bounded by $O(n \cdot log(n))$.
+
+Let $a = (a_1, a_2, ..., a_i, . . . a_j, . . . a_n)$ denote the list of elements we want to sort, in sorted
+order. Note that, for the analysis we may assume that we know the order. The input is any
+permutation of a. For all $1 \leq i < j \leq n$, let $X_{i,j}$ denote the random variable indicating whether Quicksort compared $a_i$ and $a_j$.
+
+$\hspace{5cm} X_{i,j} = \begin{cases} 1 \hspace{2cm} \text{if Quicksort compares } a_i \text{ and } a_j  \\ 0 \hspace{2cm} \text{otherwise} \end{cases}$
+
+
+Any two elements get compared at most once. The expected number of comparisons is thus
+
+$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} X_{ij}$
+
+Due to linearity of the expectation we get:
+
+$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij})$
+
+Quicksort compares $a_i$ and $a_j$ if and only if either
+- we choose $a_i$ or $a_j$ as pivot then we do compare them.
+- we choose $p < a_i$ or $p > a_j$ then the decision is deferred and we will pick a new pivot in the next recursive step.
+
+At each step, the probability that $X_{ij} = 1$ under the condition that we will certainly not compare $a_i$ to $a_j$ in the future is exactly $\frac{2}{j−i+1}$. Hence, the overall probability of $X_{ij} = 1$ equals $\frac{2} {j−i+1}$, too.  (Propability that we choose $a_i$ + Propability that we choose $a_j$)
+
+Thus, we have $\mathbb{E}[X_{ij}] = \frac{2}{j-i+1}$
+
+$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij}) =  \sum_{i=1}^{n-1} \sum_{j=1+1}^{n}  \frac{2}{j-i+1}$
+
+$=  \sum_{i=1}^{n-1} 2 \cdot ( \frac{1}{2} + \frac{1}{3} + ... + \frac{1}{m-i+1})$
+
+$< 2n (\frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n}) = 2nln(n)$
+
+
+
+Note that this worst-case expected-time bound is better than the average-case time bound for the standard QuickSort since we do not assume any properties of the input. Since we do not average over all inputs of $n$ elements but over all permutations, this $O(n\cdot log(n))​$ bound on the expected time applies even to (mostly) sorted input!
+
+
+#### Primality Testing
