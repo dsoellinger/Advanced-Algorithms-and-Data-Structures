@@ -1341,7 +1341,78 @@ $< 2n (\frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n}) = 2nln(n)$
 
 
 
-Note that this worst-case expected-time bound is better than the average-case time bound for the standard QuickSort since we do not assume any properties of the input. Since we do not average over all inputs of $n$ elements but over all permutations, this $O(n\cdot log(n))​$ bound on the expected time applies even to (mostly) sorted input!
+Note that this worst-case expected-time bound is better than the average-case time bound for the standard QuickSort since we do not assume any properties of the input. Since we do not average over all inputs of $n$ elements but over all permutations, this $O(n\cdot log(n))$ bound on the expected time applies even to (mostly) sorted input!
+
+
 
 
 #### Primality Testing
+
+
+
+##### Problem: Prime
+**Given:** A natural number $n$ with $n > 1$.
+**Decide:** Is $n$ prime?
+
+
+
+Unfortunately, brute-force methods (repeated divisions by 2, 3, ..., $\lfloor \sqrt{n} \rfloor$ ) are far too slow when $n$ is truly large. Exponential worst-case running time in the size of $n$.
+However, there exists an algorithm that can solve Prime in polynomial time (Agrawal&Kayal&Saxena 2002). Their algorithm runs in $O(log^{7.5+\epsilon}(n))$ time, which is polynomial in the size of $n$.
+
+In fact, large parimes are not particularly rare. One out of $ln(n)$ random integers of the size of $n$ will be prime! **Randomization yields an efficient, simple and easy-to-implement primality test - if we accept a small probability of error!**
+
+
+
+##### Lemma (92)
+
+If $p \in \mathbb{N}$ is prime then $a^p \equiv_p a$ for every $a \in \mathbb{N}$. (no "if and only if"!!!)
+
+
+
+- If $a$ is not a multiple of $p$ then this reduces to $a^{p−1} \equiv_p 1$
+- If $a^{n-1} \not\equiv_n 1$ for a given $n \in \mathbb{N}$ and $a \in \{2,3,...,n-1\}$ then $n$ is composite, i.e., not a prime.
+- Such an $a$ is called a *Fermat witness* for the compositeness of $n$.
+- Otherwise, $n$ is possible prime - or $a$ is a **Fermat liar**
+
+
+
+##### Carmichael number
+
+A Carmichael number is a composite number $n$ which satisfies $a^{p−1} \equiv_p 1$ for all integers $a$ which are relatively prime to $n$.
+
+Fortunately, Carmichael numbers are rather rare: There are about $2 \cdot 10^7$ Carmichael
+numbers between 1 and $10^21$ , i.e., on average one Carmichael number within
+$5 · 10^{13}$ numbers.
+
+
+
+##### Lemma (93)
+
+If $n$ is a composite number that is no Carmichael number then at least half of all $a \in \{2,3, ..., n-2 \}$ are Fermat witnesses.
+
+##### Theorem (94)
+
+If $n$ is a composite number that is no Carmichael number then $k$ rounds of the Fermat primality test (with $k$ randomly chosen values for $a \in \{2, 3, . . . , n − 2\}$ will incorrectly classify $n$ as prime with probability at most $2-k$ .
+
+
+
+##### Fermat Test
+
+```
+bool IsPrimeFermat(int n, int k):
+	A = {2,3,...,n-2};
+	for (i = 1; i <= k; ++i):
+		a = RandomInteger(A)
+		if (gcd(n, a) != 1):
+			return false
+		if ((a^(n-1) % n) != 1):
+			return false
+		A = A \ {a}
+
+	return true / * p r o b a b l y p r i m e * /
+
+```
+
+- *IsPrimeFermat* is a Monte Carlo algorithm with one-sided error: it will classify all primes as "prime", and falsely report a composite number as “prime” with probability at most $2-k$ ; it is correct with high probability.
+- Note that the number $k$ of random trials need not be scaled with the size of $n$ in order to keep the error probability below $2^{-k}$.
+- Still, the Fermat primality test is not considered to be reliable enough on its own grounds. It is, however, used for a rapid screening of possible candidate primes.
