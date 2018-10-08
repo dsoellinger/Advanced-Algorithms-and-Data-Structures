@@ -1073,15 +1073,195 @@ $C_n = \frac{1}{n+1} \sum_{i=0}^n \binom{n}{i}^2 = \frac{1}{n+1} \binom{2n}{n} \
 
 
 
+#### Optimal Static Binary Search Tree
 
 
 
+##### What is a binary search tree?
+
+A Binary Search Tree is a node-based binary tree data structure which has the following properties:
+
+- The left subtree of a node contains only nodes with keys lesser than the node’s key.
+
+- The right subtree of a node contains only nodes with keys greater than the node’s key.
+
+- The left and right subtree each must also be a binary search tree.
+
+However, the question is how to arrange the keys of the tree to minimize the cost for searching an element. As we have to "pay" for every comparison we want to make sure that element which are accessed frequently occur farther up in the tree.
+
+
+##### Problem: OptimalStaticBinarySearchTree
+
+**Given:** A sorted set $K$ of $n$ keys $k_1$, $k_2$, ..., $k_n$ where the i-th key will be searched with probability $p_i$ for $i \in \{ 1,2, ..., n\}$.
+
+**Compute:** A binary search tree such that the expected search cost $\sum_{i=1}^n (1+ level(k_i)) \cdot p_i$ is minimum over all binary search trees, where level($k_i$) denotes the level of $k_i$ in the tree.
+
+Optimal binary search trees are used for word prediction and completion:
+
+- As an online dictionary or search engine has received more and more queries, it can assign weights to the corresponding words according to their frequency in the queries.
+- These weights can be used to arrange the words such that likely completions of incomplete search entries can be found quickly.
 
 
 
+**Example:**
+
+<img src="images/optimal_static_binary_search_tree.png" width="500px" />
+
+**IMPORTANT:** A deeper tree may have lower expected cost!
 
 
 
+##### Lemma (89)
 
- 
+Dynamic programming allows to solve OptimalStaticBinarySearchTree in $O(n^3)$ time for $n$ keys.
+
+TODO: Example Algorithm
+
+
+
+##### Theorem (90)
+
+OptimalStaticBinarySearchTree can be solved in $O(n^2)$ time and space for $n$ keys.
+
+
+
+In 1975 Mehlhorn suggested a simple algoirthm that computes a near-optimum binary search tree in $O(n)$ time:
+
+- Choose the root of the tree such that the sums of the weights of the left and right subtrees are balanced as good as possible.
+- Apply this scheme recursively for each subtree.
+
+
+
+### Deterministic vs. Randomized Algorithm
+
+
+
+#### Deterministic algorithm
+
+- It will always produce the same output in repeated runs for a particular input
+- The underlying state machine will always pass through the same sequence of states for the same input
+
+
+
+#### Randomized algorithm
+
+- It uses a random number at least once to make a (branching) decision
+- Repeated runs for the same input may result in different outputs or running times
+- Probability of generating incorrect output
+- Efficiency is guaranteed only with some probability
+
+
+
+Note that randomization and probabilistic methods play a key role in modern algorithm theory: Randomized algorithms are often simpler to understand and implement, while being correct and efficient with high probability.
+
+
+
+#### Random Numbers
+
+"Classical" approaches like the rolling of dice or the flipping of coins cannot be used by computers. Alternatively, we can measure some physical phenomenon that can be expected to be random. For instance, the seconds of the current wall-clock time can be expected to yield a random number between 0 and 59.
+Most Unix/Linux-like operating systems have */dev/random*, which allows to access environmental noise collected from source like device drivers. The second alternative is to use an algorithm to generate [sic!] random numbers: *pseudorandom number generator*
+Pseudorandom numbers are a sequence of apparently random numbers which are completely determined by an initial value, known as *seed*.
+A pseudorandom number generator will, by its very nature, never yield "true" random numbers in the purest sense of the world. But generators exist which are widely regarded to be sufficient even for security-critical applications.
+
+#### Monte Carlo vs. Las Vegas
+
+##### Monte Carlo algorithm:
+
+- Is always fast
+- Might fail to produce a correct output with one-sided or two-sided errors
+- The probability of an incorrect output is bound based on an error analysis
+- Repetitions of Monte Carlo algorithms tend to drive down the failure probability exponentially
+
+
+
+##### Las Vegas algorithm
+
+- Always gives a correct output (or reports an error)
+
+- Its run-time performance may vary
+
+
+Several Las Vegas algorithms can be turned into Monte Carlo algorithms by
+setting a time budget and stopping the algorithm once this time budget is
+exceeded..
+
+
+
+#### Random Permutation
+
+
+
+##### Problem: RandomPermutation
+
+**Given:** A sequence $S=(s_0, s_1, ..., s_{n-1})$ of $n$ entities.
+
+**Compute:** A random permutation of these $n$ entities, uniformly at random.
+
+
+
+##### Algorithm
+
+```
+# Knuth Shuffle
+
+void RandomPermutation(array S[]):
+	N = S.length-1
+	for (i = N; i >= 1; --i):
+		j = RandomInteger({0,1,...,i})
+		Swap(S[i], S[j])
+```
+
+
+
+- Knuth's version runs in $\theta(n)$ time
+- After RandomPermutations(S) we have Pr[s=$s_i$]=$\frac{1}{n}$ for all $s \in S$ and all $i \in \{0,1,...,n-1\}$
+- Hence RandomPermutation(S) generates each permutation with probability $\frac{1}{n!}$ uniformly at random.
+
+
+
+**Knuth Shuffle vs. Naive Permutation**
+
+
+
+**Version 1**
+
+```
+void shuffle(array S[]):
+	N = S.length-1
+	for (i=0; i<=N; i++):
+		j = random({0,1,...,N})
+		Swap(S[i],S[j]) 
+	return S
+```
+
+What's the problem with this approach? Well, the permutations are not uniformly distributed. In other words, some permutation are more likely to occur than others. This is obviously bad!
+
+**How to proof?** 	Permutate the sequence (A,B,C) and count the resulting permutations.
+
+
+
+**Version 2**
+
+```
+void shuffle(array S[]):
+	N = S.length-1
+	copy = []
+	
+	for (i=0; i<=N; i++):
+		j = random({0,...,S.length-1})
+		copy[i] = S[j]
+		del S[j]
+	
+	return copy
+```
+
+The above mentioned algorithm indeed solves the problem of Version 1. All permutations are equally likely to be chosen. However, there's another problem with this solution. Deletion elements from an array means that we have to resize the array. The cost for such delete operations are on average $O(\frac{n-1}{2})$. Hence, the complexity of the shuffle algorithm becomes $O(n^2)$ time.
+
+
+
+**Version 3 (Knuth Shuffle)**
+
+Knuth Shuffle resolves both issues. It's complexity is $O(n)$ and all permutations are guaranteed to occur equally likely.
+
+
 
