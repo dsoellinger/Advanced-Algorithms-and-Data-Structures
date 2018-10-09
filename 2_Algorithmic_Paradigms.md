@@ -1416,3 +1416,83 @@ bool IsPrimeFermat(int n, int k):
 - *IsPrimeFermat* is a Monte Carlo algorithm with one-sided error: it will classify all primes as "prime", and falsely report a composite number as “prime” with probability at most $2-k$ ; it is correct with high probability.
 - Note that the number $k$ of random trials need not be scaled with the size of $n$ in order to keep the error probability below $2^{-k}$.
 - Still, the Fermat primality test is not considered to be reliable enough on its own grounds. It is, however, used for a rapid screening of possible candidate primes.
+
+
+
+##### Lemma (95)
+
+Let $n \in \mathbb{N}$ be prime with $n > 2$, and $s,d \in \mathbb{N}_0$ such that $n-1 = 2^2 \cdot d$, with $d$ odd. Then for all $a \in \{2,3,...,n-2 \}$ we have
+
+​              $a^d \not\equiv_n 1$                  or                $a^{2^r \cdot d} \equiv_n -1$             for some $r \in \{0,1,...,s-1 \}$
+
+
+
+##### Lemma (96)
+
+Let $n \in \mathbb{N}$ be odd with $n \geq 5$, and $s,d  \mathbb{N}_0$, such that $n-1 = 2^s \cdot d$, with $d$ odd. If there exists and $a \in \{2,3,...,n-2 \}$ such that
+
+​           $a^d \not\equiv_n 1$                  or                $a^{2^r \cdot d} \equiv_n -1$             for some $r \in \{0,1,...,s-1 \}$
+
+then $n$ is composite.
+
+**Note:** Such an $a$ is called an *MR-witness* of compositeness.
+
+
+
+##### Miller-Rabin
+
+```
+bool IsPrimeMillerRabin(int n, int k):
+	s = 0; d = n - 1;
+	
+	while (IsEven(d)):
+		++s; d /= 2;
+
+	A = {2,3,...,n-2};
+
+	LOOP: for (i = 1; i <= k; ++i):
+		a = RandomInteger(A); 
+		A = A \ {a};
+		x = a^d % n;
+		if ((x == 1) || (x == -1)) do next LOOP;
+		for (j = 1; j < s; ++j):
+			x = x^2 % n;
+			if (x == 1) return false; / * c o m p o s i t e * /
+			if (x == -1) do next LOOP;
+
+		return false; / * c o m p o s i t e * /
+
+return true; / * p r o b a b l y  p r i m e * /
+
+```
+
+
+
+##### Lemma (97)
+
+Let $n \in \mathbb{N}​$ be an odd composite number with $n \geq 5​$. 
+Then the set $\{2, 3, . . . , n − 2\}​$ contains at most $\frac{n-3}{4}​$ numbers $a​$ such that $gcd(n,a)=1​$ but $a​$ is no MR-witness of the compositeness of $n​$.
+
+##### Theorem (98)
+
+If $n$ is an odd composite number then the Miller-Rabin primality test with $k$ rounds (and $k$ randomly chosen values for $a \in \{2, 3, . . . , n − 2\}$) will incorrectly classify $n$ as prime with probability at most.
+
+- Hence, 10 rounds of the Miller-Rabin primality test give us a probability of error
+  that is roughly $10^{−6}$, and 20 rounds result in a probability of error that is roughly
+  $10^{−12}$ . After 30 rounds we are down to roughly $10^{−18}$ error probability.
+
+- Note that this error bound does not depend on the size of n and that it holds also
+  for Carmichael numbers!
+
+- For comparison purposes: Quality hard disks have a probability of about $10^{−16}$
+  for an unrecoverable read error (URE).
+
+
+##### Lemma (99)
+
+One round of the Miller-Rabin primality test for input number $n$ takes $O(log^3(n))$ time,
+using modular exponentiation by repeated squaring.
+
+Note that FFT-based multiplication can bring the time complexity of one round down to
+$O(log^2(n ) \cdot log(log(n) \cdot log(log(log(n)))$.
+
