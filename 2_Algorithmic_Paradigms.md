@@ -1470,8 +1470,8 @@ return true; / * p r o b a b l y  p r i m e * /
 
 ##### Lemma (97)
 
-Let $n \in \mathbb{N}​$ be an odd composite number with $n \geq 5​$. 
-Then the set $\{2, 3, . . . , n − 2\}​$ contains at most $\frac{n-3}{4}​$ numbers $a​$ such that $gcd(n,a)=1​$ but $a​$ is no MR-witness of the compositeness of $n​$.
+Let $n \in \mathbb{N}$ be an odd composite number with $n \geq 5$. 
+Then the set $\{2, 3, . . . , n − 2\}$ contains at most $\frac{n-3}{4}$ numbers $a$ such that $gcd(n,a)=1$ but $a$ is no MR-witness of the compositeness of $n$.
 
 ##### Theorem (98)
 
@@ -1495,4 +1495,93 @@ using modular exponentiation by repeated squaring.
 
 Note that FFT-based multiplication can bring the time complexity of one round down to
 $O(log^2(n ) \cdot log(log(n) \cdot log(log(log(n)))$.
+
+
+
+### Line Segment Intersection
+
+
+
+#### Problem: LineSegmentIntersection
+
+**Given:** A set $S$ of line segments in $\mathbb{R}^2$
+**Decide:** Do any two segments of $S$ intersect?
+
+
+
+#### Theorem (100)
+The complexity of LineSegmentIntersection for $n$ line segments has an $\Omega(n \cdot log(n))$ lower bound in the ACT model.
+
+**Proof:**
+
+- We use a reduction from ElementUniqueness. Let $\{x_1, x_2, ..., x_n\}$ be an instance of ElementUniqueness.
+- We map $x_i$ to the line segment between two points $(x_i,0)$ and $(x_i,1)$.
+- Obviously, lines corresponding to elements that are not unique will overlap.
+- ElementUniqueness can be solved in time $O(n)$ plus the time consumed by a solution for LineSegmentIntersection which establishes the $\Omega(n \cdot log(n))$ bound claimed.
+
+
+
+#### Theorem (101)
+All $k$ intersections among $n$ line segments in $\mathbb{R}^2$ can be detected in $O((n+k) \cdot  log(n))$ time and $O(n)$ space using a plane-sweep algorithm.
+
+
+
+#### Corollary (102)
+LineSegmentIntersection can be solved in optimal $O(n \cdot log(n))$ time and $O(n)$ space for $n$ line segments.
+
+- Note that $n$ line segments may yield $\theta(n^2)$ many intersections. Hence, $k \in O(n^2)$ and in the worst case the Bentley-Ottmann algorithm runs in $\theta(n^ \cdot log(n))$ time.
+- [Chazelle&Edelsbrunner 1992] explain how to detect all k intersections in
+$O(k + n \cdot log(n))$ time, using $O(n + k ) $ space.
+- [Balaban 1995] improves this to $O(k + n \cdot  log(n))$ time and $O(n)$ space.
+
+
+
+#### Bentley-Ottmann Algorithm
+
+```
+Q := the 2n segment end-points
+D := {}
+while Q <> {} do begin
+     p := DELETEMIN(Q);
+
+     if p is the left end-point of si then begin
+          INSERT(si,D);
+          A := ABOVE(si,D);
+          B := BELOW(si,D);
+          INSERT (in Q) A intersect si and B intersect si if they exist and are to the right of p
+     end
+
+     if p is the right end-point of si then begin
+          A := ABOVE(si,D);
+          B := BELOW(si,D);
+          DELETE(si,D);
+          INSERT (in Q) A intersect B if it exists and if it is to the right of p
+     end
+
+     if p := si intersect sj then begin
+          {suppose si := ABOVE(sj)}
+          INTERCHANGE(si,sj,D);
+          A := ABOVE(sj,D);
+          B := BELOW(si,D);
+          INSERT (in Q) A intersect sj and B intersect si if they exist and are to the right of p
+          REPORT(p);
+     end
+
+end 
+```
+
+
+
+#### Complexity
+
+- The algorithm processes a sequence of $2n + k$ events.
+- Since future intersections between line segments are maintained in the priority
+  queue $Q$ if and only if the line segments currently are neighbors in the left-to-right order, at any given point in time we will never need to do maintain more than $3n − 1$ events in Q.
+- The algorithm stores up to $n$ line segments in left-to-right order in T .
+- Every event requires a constant number of updates of Q and T .
+- If Q and T allow insertions, deletions and searches in logarithmic time then
+  every event is handled in $O(log(n))$ time.
+- Any standard balanced binary search tree (e.g., AVL-tree, red-black tree) and
+  any logarithmic-time priority queue (e.g., binary heap) suffices.
+- Summarizing, the Bentley-Ottmann algorithm finds all intersections among $n$ line segments in $O((n + k ) log(n))$ time, using $O(n)$ space.
 
