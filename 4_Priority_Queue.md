@@ -184,5 +184,160 @@ This causes the element to be the root of a tree. Deleting the element can there
 ### Fibonacci Heaps
 
 - The name is derived from the fact that the Fibonacci numbers show up in the complexity analysis of its operations.
-- Similar to binomial heaps, but less rigid. Fibonacci heaps lazily defer all clean-up work after an Insert til the next DeleteMin
+
+- Similar to binomial heaps, but less rigid. Fibonacci heaps **lazily** defer all clean-up work after an Insert til the next DeleteMin
+
+  For example, merge operation simply links two heaps, insert operation simply adds a new tree with single node. The operation extract minimum is the most complicated operation. It does delayed work of consolidating trees.
+
+#### Fibonacci Heap
+- Collection of min heaps (no binomial heap)
+- Maintains pointer to element with minimum key
+- Some nodes are "marked".
+
+#### Representation
+
+**Heap representation:**
+- Maintain root nodes in doubly-linked circular list
+- Store pointer to root node with minimum key
+
+**Node representation:**
+- A pointer to its parent
+- A pointer to one of its children
+- The number of its children
+- Pointers to its left and right siblings
+- A binary flat that indicates whether the nodes is marked
+
+**Marking of nodes:**
+
+- **Unmarked:** The nodes has had no child cut
+- **Marked:** The node has had once child cut
+- Basic idea: When a child is cut from a marked parent node, then the parent node
+  (together with its entire subtree) is cut, too, and moved to the root list.
+- The marking of nodes ensures that Fibonacci heaps keep roughly the structure of binomial heaps after the deletion of nodes, thus ensuring amortized bounds
+- The root node is always unmarked
+
+<img src="images/fibonacci_heap.png" width="400px" />
+
+
+
+#### Insert operation
+
+- Create a new node and insert into the list of root nodes
+
+- Update pointer to (new) minimum root node if required
+
+
+<img src="images/fibonacci_heap_insert.png" width="700px" />
+
+#### Link operation
+
+- If $r_1.key \geq r_2.key$ then make $r_1$ a child of $_2$, otherwise $r_2$ becomes a child of $r_1$.
+- Update information on the order of $r_2$ (or $r_1$)
+
+#### Cut operation
+
+- Remove $v$ from the child list of its parent $p$ and insert it into the root list
+- Update information on the order of $p$
+- Mark $p$
+
+#### DeleteMin
+
+- Delete the root node with the current minimum
+- Move its children as new root nodes into the list of root nodes
+- Link trees until no pair of nodes has the same order
+- Update pointer to minimum root
+
+<img src="images/fibonacci_heap_deleteMin_1.png" width="400px" />
+
+
+
+<img src="images/fibonacci_heap_deleteMin_2.png" width="400px" />
+
+<img src="images/fibonacci_heap_deleteMin_3.png" width="400px" />
+
+<img src="images/fibonacci_heap_deleteMin_4.png" width="400px" />
+
+
+
+<img src="images/fibonacci_heap_deleteMin_5.png" width="400px" />
+
+<img src="images/fibonacci_heap_deleteMin_6.png" width="400px" />
+
+
+
+#### DecreaseKey
+
+- If the new key of $v$ is less than the key of the parent $p$ then cut $v$ and move it (with its subtree) to the root list.
+- If $p$ is not marked then mark $p$
+- Else, cut $p$ and move to root list and apply recursively to its parents
+- Update pointer to minimum root
+
+**Case 1:**
+
+<img src="images/fibonacci_heap_decreaseKey_1.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_2.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_3.png" width="300px" />
+
+
+
+**Case 2:**
+
+<img src="images/fibonacci_heap_decreaseKey_4.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_5.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_6.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_7.png" width="300px" />
+
+<img src="images/fibonacci_heap_decreaseKey_8.png" width="300px" />
+
+
+
+#### Lemma (123)
+
+If only Insert and DeleteMin operations are carried out, then a Fibonacci heap is a binomial heap after every DeleteMin operation.
+
+**Note:** If no consolidation occurs (since no suitable DeleteMin operation is carried out) then a Fibonacci heap with $n$ nodes may degenerate to one single tree, or even to an unsorted linked list (of n root nodes) or an "unary" tree of height $n − 1$.
+
+**Proof:**
+
+By induction: Every DeleteMin results in a consolidation phase during which pairs of trees which have root nodes of the same order are linked.
+
+
+
+#### Lemma (124)
+
+If a node of a tree in a Fibonacci heap has $k$ children then it is the root of a subtree with at least $F_{k+2}$ nodes.
+
+
+
+#### Corollary (125)
+
+Every node of a tree in a Fibonacci heap with a total of $n$ nodes has at most $O(log(n))$ children.
+
+**Proof:**
+
+Let $k$ be the number of children of a node $v$. By lemma 124, its subtree has $F_{k+2}$ nodes. Hence,
+
+$n \geq F_{k+2} \geq \text{(Lemma 5) } \phi^k$       implying $k \leq log_\phi n$
+
+
+
+#### Theorem (126)
+
+When starting from an initially empty heap, any sequence of $a$ Insert, $b$ DeleteMin and $c$ DecreaseKey operations takes $O(a + b \cdot log(n) +c)$ worst-case time, where $n$ is the maximum heap size.
+
+- Hence, from a theoretical point of view, a Fibonacci heap is better than a binomial heap when $c$ is smaller than $b$ by a non-constant factor.
+- A Fibonacci heap is also better than a binomial heap when frequent merging of heaps is required.
+- However, the worst-case time for one DeleteMin or DecreaseKey operation is linear, which makes Fibonacci heaps less suitable for applications which cannot tolerate excessive running time for individual operation.
+- Fibonacci heaps are sometimes reported to be slow in practice due to hidden constants.
+
+
+
+### Performance Summary
+
+<img src="images/performance_summary.png" width="600px" />
 
