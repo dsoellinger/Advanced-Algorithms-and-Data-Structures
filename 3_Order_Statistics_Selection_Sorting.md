@@ -203,5 +203,89 @@ Radix Sort is a stable sorting algorithm that can be implemented to sort an arra
 elements whose keys are formed by the Cartesian product of $d$ digits, with each digit
 out of the range [0, k − 1], within $O(d(n + k ))$ time and $O(n + k )$ space, for $n, d, k \in \mathbb{N}$.
 
-**Explanation:**
+**Complexity:**
+
+- The for-loop runs $d$ times ($d$ digits). Hence, $O(d)$
+- In every for-loop we apply counting sort. The complexity of counting sort is $O(n+k)$.
+
+Hence, the overall complexity becomes $O(d(n+k))$.
+
+**Correctness proof:**
+
+**IB:**  
+
+Suppose that we have a number with $d=1$ digits. Obviously, if we sort such numbers, we will obtain the right sorting.
+
+**IH:**
+
+After the $k$-th loop, where $k = 1, 2, . . . , d$, the sequence is sorted on the lower $k$ digits.
+
+**IS:**
+
+We will now proof it for the $(k+1)$-th step. Now, based on the induction hypthesis we assume that the numbers are sorted according to the first $k$-th numbers after the $k$-th loop. We now need to show that after the $(k+1)$-th loop, we know that the sequence is sorted according to the $(k+1)$-th number. 
+
+To prove this, let $a_i$, $a_j$ two elements from A with the lower $k$ digits of $a_i < a_j$.
+
+- If the $(k+1)$-th digits of $a_i$ and $a_j$ are different, then the k-th digit of $a_i$ must appear before $a_j$.
+- If the $(k+1)$-th digits of $a_i$ and $a_j$ are the same, the right sorting depends on the other $k$ elements. Our induction hypthesis guarantees that $a_i$ appears before $a_j$. Since Counting sort is *stable* the order is preserved. $a_i$ still appears before $a_j$ after the $(k+1)$-th loop.
+
+Therefore, we can conclude that the numbers are sorted correctly after the $(k+1)$-th loop.
+
+
+
+### Topological Sorting
+
+
+
+#### Problem: TopologicalSorting
+
+**Problem:** A directed graph $G=(V,E)$
+
+**Compute:** A linear ordering of the vertices of $V$ - if it exists -  such that for all $u,$v$ \in V$ the vertex $u$ comes before the vertix $v$ if $E$ contains the directed edge $uv$.
+
+
+
+<img src="images/topological_sorting.png" width="400px" />
+
+
+
+#### Lemma (109)
+
+A directed graph $G$ admits a linear ordering of its vertices according to topological sorting if and only if $G$ does not contain a directed cycle, i.e., if and only if $G$ is a DAG.
+
+
+
+#### Theorem (110)
+
+In time $O(|V | + |E|)$ we can compute a linear ordering of the vertices of a directed graph $G = (V , E)$ according to topological sorting, or determine that the graph contains a directed cycle.
+
+
+
+#### Algorithm
+
+```
+TopologicalSort(graph G=(V,E)) {
+	L = {};
+	S = list of all nodes of V with no incoming edges;
+	while (S != {}) {
+		remove front node u from S;
+		add u to end of L;
+		for (each edge e=(uv)) {
+			remove edge e from E;
+			if (v has no other incoming edges) {
+				add v to end of S;
+			}
+		}
+	}
+	if (E != {}) 
+		return error("graph has directed cycle");
+	else
+		return L;
+}
+```
+
+- A depth-first search is an alternative to Kahn’s algorithm
+- Topological sorting can be used to solve the single-source shortest-path problem in a weighted directed graph in $O(|V | + |E|)$ time.
+
+
 
