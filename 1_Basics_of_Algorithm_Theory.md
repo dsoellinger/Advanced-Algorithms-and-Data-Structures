@@ -719,6 +719,8 @@ Aggregate analysis determines an upper bound $U(n)$ on the total cost of a seque
 
 ​	$= (\sum_{i=1; (i-1) \text{ is no power of } 2}^n 1) + \sum_{i=1; (i-1) \text{ is power of } 2}^n (i-1)+1)$
 
+​	$= \sum_{i=1; (i-1) \text{ is no power of } 2}^n 1 + \sum_{i=1; (i-1) \text{ is power of } 2}^n (i-1) + \sum_{i=1; (i-1) \text{ is power of } 2}^n 1$
+
 ​	$= n + \sum_{i=1; (i-1) \text{ is power of  } 2}^n (i-1)$
 
 ​	$= n + \sum_{i=0; i \text{ is power of } 2}^{n-1} (i)$
@@ -727,9 +729,9 @@ Aggregate analysis determines an upper bound $U(n)$ on the total cost of a seque
 
 ​	$= n + \sum_{i=0}^{\lfloor{ld(n-1) \rfloor}} 2^i \leq n + \sum_{i=0}^{\lfloor{ld(n) \rfloor}} 2^i $ 
 
-​	$= n + 2^{\lfloor log(n) \rfloor+1} -1 \leq n + 2 \cdot 2^{log(n)} = n + 2n = 3n$
+​	$= n + 2^{\lfloor ld(n) \rfloor+1} -1 \leq n + 2 \cdot 2^{ld(n)} = n + 2n = 3n$
 
-- Therefore, the amortized cost per (insertion) opreation is $\frac{U(n)}{n} = \frac{3n}{n} \in O(1)$
+- Therefore, the amortized cost per (insertion) operation is $\frac{U(n)}{n} = \frac{3n}{n} \in O(1)$
 
 
 
