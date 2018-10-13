@@ -1,4 +1,4 @@
-## Randomized Data Structures for Searching
+Randomized Data Structures for Searching
 
 
 
@@ -275,4 +275,87 @@ The expected height of a randomized binary search tree with $n$ nodes is $O(log(
 Search, insertion, deletion and join all run in $O(log(n))$ expected time.
 
 
+
+### Treaps
+
+A **treap** is a binary tree in which every node stores a priority in addition to the key-value pair such that
+
+- it is a binary search tree on the keys
+- it is a max-heap on the priorities where greater number means higher priority
+
+
+
+#### Lemma (137)
+
+The structure of a treap is completely determined by the search keys and priorites of its nodes.
+
+**Proof by induction:**
+
+- **IB**
+  The base case is a tree with one node which is trivially unique.
+- **IH**
+  Treaps with $k$ nodes are unique.
+- **IS**
+  We will know add a new node to our tree with $k$ nodes.
+  We know that the structure of a treap is the same as the structure of a binary tree in which the keys are inserted in increasing priority order, the treap with $k+1$ nodes with smallest priority is the same as the treap with $k$ nodes with smallest priority after inserting the $(k+1)$-th node. Since BST insert is a deterministic algorithm, there is only one place the $k$-th node could be inserted. Therefore, the treap with $(k+1)$-th node is unique.
+
+
+
+<img src="images/treap_example_1.png" width="500px"/>
+
+
+
+#### Operations
+
+- **Search**
+	Since a treap is a BST we can apply the algorithm for searching in a BST
+
+- **Insertion**
+	- We use the algorithm for insertion into a BST, thus creating a node z
+	- In order to repair the heap structure, we use rotations to "bubble" z upwards as long as z has a greater priority than its parent
+
+- **Deletion**
+	- Search the node z sought
+	- Use rotations to push z downwards until it becomes a leaf, thereby moving its higher-priority child upwards.
+
+- **Split:** Split treap $T$ into two treaps $T_1$, $T_2$ such that all keys of $T_1$ are less than some given key $x$ and all keys of $T_2$ are greater than $x$.
+	- Insert a dummy node with key $x$ and priority $+\infty$ into $T$
+	- This node will become the root of the new treap and its subtrees form the two treaps $T_1$, $T_2$ sought.  
+	
+
+
+
+```
+bubbleUp(node z, treap T):
+	while( z.parent != NIL && z.parent.p > z.p )
+		node u = z.parent
+		if (z.parent.right == z):
+			rotateLeft(z.parent, T)
+		else:
+			rotateRight(z.parent,T)
+		z = u
+		if (z.parent == NIL):
+			T.root = z
+			
+	return
+```
+
+
+
+### Randomized Treap
+
+A **randomized treap** is a treap in which the priorities are independently and uniformly distributed continuous random variables.
+
+**Note:** When inserting a new key-value pair we generate a random real number between, e.g., 0 and 1, and use that number as the priority of the new node. By using reals as priorities we ensure that the probability of two nodes having equal priority is zero. In practice, choosing a random integer from a large range
+or a random floating-point number is good enough.
+
+
+
+#### Theorem (139)
+
+The expected height of a treap with $n$ nodes is $O(log(n))$. Search, insertion, deletion and split all run in $O(log(n))$ expected time. The expected number of rotations done during an insertion/deletion is only $O(1)$.
+
+
+
+### 
 
