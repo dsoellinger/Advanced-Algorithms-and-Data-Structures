@@ -357,5 +357,216 @@ The expected height of a treap with $n$ nodes is $O(log(n))$. Search, insertion,
 
 
 
-### 
+### Sorted Linked List
+
+#### Pros
+
+- Truly simple dynamic data structure that is easy to implement
+- No need for an a-priory estimate of the number of elements to be stored
+- Easy to insert or delete in $O(1)$ time if position is known
+
+#### Cons
+
+- Difficult to get to the middle of the list; binary search does not work
+- Search in $o(n)$ time is difficult
+
+
+
+### Perfect Skip Lists
+
+**Goal:** Combine the appealing simplicity of sorted lists with a good expected-time behavior!
+
+**Idea:** Add a second list $L_1$ containing only every second item. Then we need at most $\lceil \frac{1}{2}n \rceil$ comparisons on $L_1$ and, with proper links into the first list $L_0$, one additional comparisons on $L_0$.
+
+If $k$ nested lists are used: At most $\lceil \frac{1}{2^{k-1}} n \rceil$ comparisons on the k-th list $L_{k-1}$, plus one additional comparison in each of the lists $L_0, L_1, ..., L_{k-2}$.
+
+
+
+#### Search
+
+To search for an item we start on the list at the top level. In the current list we move towards the sentinel until the key of the next item will be greater than the query key. Then we go down and repeat the procedure until we are in the bottom list $L_0$. In the bottom list $L_0$ we either find the item queried or no such item exists.
+
+When searching for $k$:
+
+- If $k = next.k$:   Done
+- If $k > next.k$:   Go Right. Stop at sentinel
+- If $k < next.k$:   Go down one level from $L_i$ to $L_{i-1}$. Stop at $L_0$.
+
+```
+searchSkipList(key x, skiplist T):
+	Node u = T.header
+	int h = T.height
+	
+	while(h >= 0):
+		while( u.next[h].key < x):
+			u = u.next[h]
+		--h
+		
+	return u
+```
+
+
+
+#### Insertion
+
+- Insert item into full list $L_0$ (lowest level 0)
+
+- Promote it to the next higher level with (independent) probability $p$
+
+  **Note:** Common choices for $p$ are $1/2$ and $1/4$. The choice of $p$ allows a trade-off between space complexity and query speed.
+
+  In case of $p=1/2$: The highest level of a newly can be determined by repeatedly flipping a coin until the coin comes up heads.
+
+```
+insertProbabilisticSkipList(key x, skiplist T):
+	Node u = T.header;
+	int h = T.height;
+	int hx = result of coin flips;
+	Node v = CreateNode(x, hx);
+	while (h >= 0):
+		while (u.next[h].key < x):
+			u = u.next[h];
+		if (h <= hx):
+			v.next[h] = u.next[h];
+			u.next[h] = v;
+		--h;
+
+	++T.counter_of_nodes;
+
+	return v
+```
+
+
+
+#### Deletion
+
+- Simply search and remove item from structure
+
+
+
+#### Lemma (140)
+
+The expected number of times a fair coin is tossed up to and including the first time the coin comes up heads is 2.
+
+**Proof:**
+
+Let $T$ denote this random variable and define an indicator random variable $I_i$ as $I_i := 1$ if the coin ends up being tossed $i$ or more times, and $I_i := 0$ otherwise. 
+
+
+
+Probability that we toss at least 1 times: $Pr(I_1=1) = 1$
+
+Probability that we toss at least 2 times: $Pr(I_2=1) = 0.5$     (First toss needs to be tail)
+
+Probability that we toss at least 3 times: $Pr(I_3=1) = 0.5 \cdot 0.5$   (First + second toss need to be tail)
+
+Therefore, we get:
+
+​                                                      $\mathbb{E}(I_i) = Pr(I_i = 1) = \frac{1}{2^{i-1}}$
+
+
+
+However, we since we are interested in the expected value of $T$.
+
+$T= \sum_{i=1}^{\infty} I_i$
+
+$\mathbb{E}(T) = \mathbb{E}(\sum_{i=1}^{\infty} I_i) = \sum_{i=1}^{\infty} \mathbb{E}(I_i) = \sum_{i=1}^\infty \frac{1}{2^{i-1}} = \sum_{i=0}^\infty \frac{1}{2^{i}} = 2$
+
+Hence, the expected number of levels for a newly inserted item is 2.
+
+##### Alternative
+
+Pr(Insert at level 0) = $0.5$
+
+Pr(Insert at level 0,1) = $1/4$
+
+Pr(Insert at level 0,1 ... i) = $1/2^{l+1}$
+
+Hence, we get as the required space = $\sum_{i=1}^\infty \frac{1}{2^i} n = 2n$
+
+#### Lemma (141)
+
+Suppose that we use constant-size nodes, with one node per level if an item is stored in that level. Then the expected number of nodes in a skip list storing n items is $2n$ if we disregard header and sentinel nodes.
+
+**Proof:**
+
+Probability of an item being at $L_0$: $\frac{1}{2^0} = 1$
+Probability of an item being at $L_1$: $\frac{1}{2} = 0.5$
+Probability of an item being at $L_2$: $\frac{1}{4} = 0.25$
+
+Hence, after $n$ inserts $L_0$ has $1$ elements.
+Hence, after $n$ inserts $L_1$ has $\frac{n}{2}$ elements.
+Hence, after $n$ inserts $L_2$ has $\frac{n}{4}$ elements.
+
+Hence, the expected number of elements in the list becomes:
+
+$\mathbb{E}(\sum_{i=0}^\infty \frac{n}{2^i}) = n \cdot \sum_{i=0}^\infty \frac{1}{2^i} = 2n$
+
+Hence, a linear storage can be expected to suffice for storing a skip list.
+
+
+
+#### Lemma (142)
+
+The expected height of a skip list storing $n$ items is at most $log(n) + 2$.
+
+
+
+#### Lemma (143)
+
+The expected length of a search path in a skip list storing $n$ items is $2 \cdot log(n) + 2$.
+
+
+
+#### Theorem (144)
+
+A skip list storing $n$ items has expected size $O(n)$ and supports search, insertion and deletion in expected time $O(log(n))$.
+
+
+
+#### Extension
+
+- We can count the number of edges in a search path, in order to gain access to the $j$-th item stored in the skip list
+	- length of edge in $L_0$ is 1
+	- length of edge in $L_i$ is the sum of the lengths of the edges in $L_{i-1}$ below
+- To get to the j-th node we
+	- go right if the sum of the edge lengths so far plus the length of th next edge is less than j
+	- go down otherwise
+- This makes it easy to get the j-th item in the sorted list in $O(log(n))$ time and set/modify its value. Of course, we need to take care that the list remains still sorted.
+
+
+
+#### Sample application: Rope 
+
+A **rope** is a data structure that is used to efficiently store and manipulate a very long string of characters by maintaining a number of short (sub-)strings.
+Operations like insertion, deletion and random access shal be supported efficiently.
+
+Ropes are used in many applications that maintain long strings which change over time. For instance, word processors or text editors.
+
+Let $R := s_0 s_1 ... s_{n-1}$ be a string of length $n$ that is stored as a rope and let $R_1$, $R_2$ be rope strings.
+
+**Rope operations:**
+​	- **Concat($R_1$, $R_2$):** Return a rope that contains the concatenation of the strings $R_1$, $R_2$
+​	- **Split(R,i):** Truncate $R$ to length $i$ and return a rope that contains the remaining characters
+​	- **report(R,i,j):** Return a rope that contains the string $s_i,s_{i+1}, ..., s_{j-1}$
+​	- **insert(R, $R_1$, i):** Return rope with string $R_1$ inserted at position $i$ of $R$.
+​	- **delete(R,i,j):** Return rope without the string $s_i, s_{i+1},..., s_{j-1}$ of $R$
+
+- Insertion and deletion can be realized by means of the first three operations.
+
+- We can split a skip list at any node in $O(log(n))$ expected time
+  - Insert a new sentinel and new header at the desired position
+  - Cut old pointers and set up new pointers
+
+- We can also join two skip lists with $n_1$ and $n_2$ nodes in $O(log(max\{ n_1, n_2\}))$ expected time:
+	- Set up new pointers
+	- Delete sentinel and header
+
+
+
+
+
+
+
+
 
