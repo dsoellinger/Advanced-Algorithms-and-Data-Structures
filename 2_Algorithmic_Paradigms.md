@@ -359,16 +359,15 @@ Consider a cache of capacity $2$ and the following sequence of items: a,b,c,b,c,
 
 - **Farthest in future (FF):** Evict item in the cache that is not requested until farthest in the future (Clairvoyant algorithm)
 
-
-**Note:** it is not easy to see that LIFO, FIFO, LRU and LFU need to form an optimum eviction strategy
+**Note:** it is not easy to see that LIFO, FIFO, LRU and LFU need NOT form an optimum eviction strategy
 
 
 
 ##### Lemma (69)
 
-There exists an optimum evication strategy that bring an item into the cache no earlier than at the item when it is requested.
+There exists an optimum evication strategy that brings an item into the cache no earlier than at the item when it is requested.
 
-Note: Obviously, we do not gain anything by bringing an item into the cache at a time when the item is not requested.
+**Note:** Obviously, we do not gain anything by bringing an item into the cache at a time when the item is not requested.
 
 
 
