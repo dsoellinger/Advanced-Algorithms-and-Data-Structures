@@ -263,6 +263,8 @@ Huffman's greedy algorithm computes an optimum prefix code $c*$ for $\Omega$ rel
 - **Earliest start time:** Pick jobs according to ascending ordre of $s_i$
 - **Earliest finish time:** Pick jobs according to ascending order of $f_i$
 
+<img src="images/job_scheduling_counter_examples.png" width="600px" />
+
 
 
 ##### Lemma (67)
