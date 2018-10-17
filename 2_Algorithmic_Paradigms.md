@@ -285,23 +285,24 @@ return A
 
 
 
-**Proof by contradiction:**
+**Proof:**
 
-We now assume that our Greedy-strategy does **not** produce the correct result.
+Let $A = \{ i_1, ..., i_k\}$ be the set of requests selected by our greedy strategy (sorted according to the finish times). Let $O = \{j_1, ..., j_m\}$ be the requests selected by an optimal solution ordered by their finish times.
 
-Suppose that an optimum solution has $m$ jobs while a greedy approach picks $k < m$ jobs $i_1, i_2, ..., i_k$. 
+We are now going to show by induction that $f(i_r) \leq f(j_r)$ where $r \leq k$.
 
-Now, we are going to show that such a set (not equal to the optimum solution) cannot exist.
+**IB:**             $r=1$. 
 
-Therefore, we first need to label the sets as follows:
+Since our strategy selects the job with the earliest finish time, it certainly must be the case that $f(i_1) \leq f(j_1)$.
 
-Let $x$ be the largest-possible number such that $i_1=j_1$, $i_2 = j_2$, ..., $i_x = j_x$ over all optimum solutions $j_1, j_2$, ..., $j_m$. Obviously, we have $x < m$.
+**IH:**             $f(i_r) \leq f(j_r)$
 
-Next, we assume that there is a job $i_{x+1}$ that finishes before $j_{x+1}$. So, why not exchanging the job with $f_{j_{x+1}}$ of our optimum solution? Although, the optimum solution would remain optimal, it would violate the maximiality of $x$.
+**IS:**              $f(i_{r+1}) \leq f(j_{r+1})$
+We assume that $f(i_r) \leq f(j_r)$ (IH) holds. We also know that the first $r$ schedules of the greedy as well as the optimal solution are compatible. We now use the greedy algorithm to find the next $r_{r+1}$ schedule. Any jobs that are valid to be added to the optimal solution are certainly valid to add to our greedy solution. Therefore, $f(i_r) \leq f(j_r)$.
 
-The optimum solution still remains optimal, but it violates the maximality of $x$.
+So, we know that for all $r \leq k$, $f(i_k) \leq f(j_k)$ holds. Since our optimal solution needs to be optimal we can immediately conclude that $k \leq m$. However, what we still need to show is that the solution produced by our greedy algorithm is optimal. In other words, $k=m$.
 
-
+We now assume that our greedy strategy does not produce the correct result. In other words $k < m$. So, there is a job $j_{k+1}$ in $O$ that is not in $A$. This job must start after the O's job finishes at $f(j_k)$ and hence after $f(i_k$). But, then this job could be immediately select by our greedy strategy increasing the size of $A$. This is a contradiction, and thus $A$ is optimal.
 
 <img src="images/greedy_proof.png" width="1000px" />
 
