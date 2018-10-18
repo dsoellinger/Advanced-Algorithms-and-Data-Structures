@@ -8,7 +8,7 @@
 
 #### What is incremental construction?
 
-A result $R(\{ x_1, x_2, ..., x_n\})$ that depends on $n$ input items $x_1, x_2, ..., x_n$ is computed by dealing with one element at a time: For $2 \leq i \leq n$, we obtain $R(\{ x_1, x_2, ..., x_i\})$ from $R(\{ x_1, x_2, ..., x_{i-1}\})$ by "inserting" the i-th item $x_i$ into $R(\{ x_1, x_2, ..., x_{i-1}\})$.
+A result $R(\{ x_1, x_2, ..., x_n\})$ that depends on $n$ input items $x_1, x_2, ..., x_n$ is computed by **dealing with one element at a time**: For $2 \leq i \leq n$, we obtain $R(\{ x_1, x_2, ..., x_i\})$ from $R(\{ x_1, x_2, ..., x_{i-1}\})$ by "inserting" the i-th item $x_i$ into $R(\{ x_1, x_2, ..., x_{i-1}\})$.
 
 #### Important invariant of incremental construction
 
@@ -38,7 +38,7 @@ InsertionSort(array, int low, int high):
 		A[j] = x
 ```
 
-
+**Note:** Obviously, insertion sort can sort the numbers **in place**:
 
 ##### Runtime complexity
 
@@ -385,7 +385,6 @@ The farthest-in-future strategy is an optimum evication strategy.
 
 - LRU is k-competitive 
 
-
 **Note:** Competitive analysis compares the performance of an optimal online algorithm to an optimal offline algorithm. Thus, k-competitive means that there is an offline algorithm which performs at most k-times worse than an online algorithm
 
 
@@ -421,7 +420,7 @@ Suppose that we need to compute $a^n$ for some large $n \in \mathbb{N}$.
 
 A naive recursive solution would look as follows:
 
-$a^n := \begin{cases} a \hspace{2.5cm} \text{if } n \text{ is odd} \ \\ a^{n-1} \cdot a \hspace{1.1cm} \text{if } n \text{ is even}\end{cases}$
+$a^n := \begin{cases} a \hspace{2.5cm} \text{if } n = 1 \ \\ a^{n-1} \cdot a \hspace{1.1cm} \text{if } n > 1\end{cases}$
 
 Obviously, this approach requires $n-1$ multiplications.
 
@@ -431,7 +430,11 @@ We could also make use of the fact that $n = \lceil \frac{n}{2} \rceil + \lceil 
 
 $a^n := \begin{cases} a \cdot (a^{(n-1)/2})^2\hspace{1cm} \text{if } n \text{ is odd}  \\ (a^{1/2})^2 \hspace{2.5cm} \text{if } n \text{ is even}\end{cases}$
 
-This will consume $\theta(log(n))$ muplications since $n$ is at least halved during each call to exponentiation, at the cost of at most two muplications per call.
+This will consume $\theta(log(n))$ muplications since $n$ is at least halved during each call to exponentiation at the cost of at most two muplications per call.
+
+**Recursion + Master Theorem:**
+
+$T(n) = 1 \cdot T(n/2) + 1  \rightarrow 1 \in n^{log_2(1)} \rightarrow \theta(log_2(n))$
 
 
 
@@ -455,9 +458,16 @@ Obviously, the multiplication of two $n$ x $n$ matrices results in $\theta(n^3)$
 
 
 
+**Note:**
+
+Computation of $c_{ij}$ requires $n$ multiplications and $n-1$ additions. Hence, $n+(n-1)$ operations.
+Since this computation needs to be done for each cell, we get $n^2 \cdot (n+(n-1))$ operations in total. Therefore, the complexity becomes $\theta(n^3)$.
+
+
+
 ##### Theorem (71)
 
-Seven multiplications of scalars suffice to compute the multiplication of two 2x2 matrices. In general, $O(n^{log_2(7)}) \approx O(n^2.807)$ arithmetic operations suffice for $n$ x $n$ matrices. The algorithm is called *Strassen Algorithm*.
+Seven multiplications of scalars suffice to compute the multiplication of two 2x2 matrices. In general, $O(n^{log_2(7)}) \approx O(n^{2.807})$ arithmetic operations suffice for $n$ x $n$ matrices. The algorithm is called *Strassen Algorithm*.
 
 
 
@@ -504,7 +514,7 @@ Hence, the Master Theorem yield $ T \in \theta(n^{log_2(7)}) \approx \theta(n^{2
 
 - Coppersmith & Winograd:	$O(n^{2.375})$
 - Stothers: $O(n^{2.37369})$
-- Williams: $O(n^2.37286)$
+- Williams: $O(n^{2.37286})$
 
 The Coppersmith-Winograd algorithm and the more recent improvements are used frequently as building blocks in other algorithms to prove complexity bounds. Besides Strassen’s algorithm, these algorithms are of no practical value, though, since the cross-over point for where they would improve on the naive cubic-time algorithm is enormous.
 
@@ -530,13 +540,13 @@ ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot l
 
 ##### Proof: 1-D
 
-- Divide the points $S$ into two sets $S_11$, $S_2$ by some x-coordinate so that $p < q$ for all
+- Divide the points $S$ (unsorted) into two sets $S_11$, $S_2$ by some x-coordinate so that $p < q$ for all
   $p \in S_1$ and $q \in S2$.
 - Recursively compute closest pair $(p_1, p_2)$ in $S_1$ and $(q_1, q_2)$ in $S_2$.
 - Let $\delta$ be the smallest separation so far: $\delta = min(|p_2-p_1|, |q_2-q_1|)$
 - The closest pair is $\{p_1, p_2\}$, or $\{q_1, q_2\}$, or some $\{p_3, q_3\}$ where $p_3 \in S_1$ and $q_3 \in S_2$.
 - If $m$ is the dividing coordinate, then $p_3$, $q_3$ must be within $\delta$ of $m$.
-- In 1D, $p_3$ must be the rightmost point of $S_1$ and $q_3$ the leftmost point of $S_2$. Howver, this does not generalize for higher dimensions.
+- In 1D, $p_3$ must be the rightmost point of $S_1$ and $q_3$ the leftmost point of $S_2$. However, this does not generalize for higher dimensions.
 - At most one point can lie in the intervall $(m-\delta, m ]$. Same applies for $S_2$
 
 <img src="images/closest_pair_1d.png" width="400px" />
@@ -544,6 +554,8 @@ ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot l
 
 
 **Recurrence:** $T(n) = 2T(n/2) + O(n)$
+
+**Hint:** Finding the median in an unsorted array takes $O(n)$ time. (k-th smallest element)
 
 
 
@@ -576,9 +588,9 @@ ClosestPair for $n$ points can be solved in worst-case optimal time $O(n \cdot l
 
 ​	How many points can be inside $R$ if each pair is at least $\delta$ apart? **At most 6!** 
 
-​        So, we only need to perform $6 \cdot n/2$ distance comparisons.
+​        So, we only need to perform **at most** $6 \cdot n/2$ distance comparisons.
 
-
+​	**Note:** It might be the case that all points are in the strip. Without this statement we would end up with $O(n^2)$ comparisons in the worst case.
 
 **Complexity:**
 
@@ -657,7 +669,7 @@ $F_n := \begin{cases} n \hspace{4cm} \text{if } n \leq 1 \\ F_{n-1}  + F_{n-2} \
 
 **Example:** 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ...
 
-Since the Fibonacci numbers are defined recursively, a recursive computation scheme seems natural. Note that this requires Fibonacci numbers to be computed over and over again. For example, $F_{n-4} is computed five times from scratch.
+Since the Fibonacci numbers are defined recursively, a recursive computation scheme seems natural. Note that this requires Fibonacci numbers to be computed over and over again. For example, $F_{n-4}$ is computed five times from scratch.
 
 <img src="images/fibonacci_example.png" width="400px" />
 
