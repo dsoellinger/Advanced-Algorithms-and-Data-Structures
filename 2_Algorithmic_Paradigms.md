@@ -621,8 +621,6 @@ If applicable, dynamic programing combines the best of both worlds for two commo
 - As a greedy algorithm it tends to be reasonably fast
 - As exhaustive search it will determine the true optimum
 
-
-
 Note that Dynamic Programming may result in an efficient (sub-exponential) algorithm if the following conditions hold:
 
 - a solution can be computed by combining solutions of sub-problems
@@ -706,7 +704,7 @@ $C(n) := 2^b C(n-2b) + a(2^{b-1} + 2^{b-2}  + 2 + 1)$
 
 Substitution stops when $b = n/2$:
 
-$C(n) := 2^{n/2} C(0) + a(2^{b-1} + 2^{b-2}  + 2 + 1) \geq m \cdot 2^{n/2}$
+$C(n) := 2^{n/2} C(0) + a(2^{b-1} + 2^{b-2}  + 2 + 1) = 2^{n/2} + a(2^{n/2}-1) = (1+a) \cdot 2^{n/2} - a$
 
 Hence, Fibonacci is in $\Omega(2^{n/2}) = \Omega(\sqrt{2}^n) \approx \Omega(1.41^n)$
 
@@ -720,11 +718,11 @@ $C(n) := C(n-1) + C(n-2) + c \leq 2C(n-1) + c$
 
 By substitution:
 
-$C(n) < 2^k \cdot C(n-k) + c \cdot (2^{k-1} + 2^{k-2} + ... + 2^2 + 2 +1)$
+$C(n) < 2^k \cdot C(n-k) + c \cdot (2^{k-1} + 2^{k-2} + ... + 2^2 + 2 +1) = 2^k \cdot C(n-k) + c \cdot (2^k -1)$
 
-Substitution stops when $n-k=1​$. Hence,  $k=n-1​$
+If $k = n$ we get:
 
-$C(n) := O(m \cdot 2^{n-1}) \leq O(m \cdot 2^n)$
+$C(n) < 2^n + c 2^n - c = (1+c) \cdot 2^n - c$
 
 Hence, Fibonacci is in $O(2^n)$.
 
@@ -747,6 +745,8 @@ $F_n = \frac{1}{\sqrt{5}} \cdot (\frac{1+\sqrt{5}}{2})^n - \frac{1}{\sqrt{5}} \c
 $O(F_n)  = O(\frac{1}{\sqrt{5}} \cdot (\frac{1+\sqrt{5}}{2})^n) - O(\frac{1}{\sqrt{5}} \cdot (\frac{1-\sqrt{5}}{2})^n)$
 
 Hence, $C \in O(\phi^n)$ with the golden ratio $\phi := \frac{1+\sqrt{5}}{2}$
+
+By applying our **fast exponentiation trick** we can compute $F_n$ with $log_2(n)$ multiplications.
 
 
 
@@ -926,7 +926,7 @@ Consider a $n$-vertex convex polygon $P$. Select on edge of $P$ and denote it by
 
 ##### Lemma (82)
 
-Consider an $n$-vertex convex polygon $P$. Select one edgje of $P$ and denote it by $r$. Label the other edges of $P$ by $A_1$, $A_2$, ..., $A_{n-1}$ in CCW order, start at $r$. Then there exists a bijection between the triangulations of $P$ and parenthesizations of the matrix chain product $A_1 \cdot A_2 \cdot ... \cdot A_{n-1}$.
+Consider an $n$-vertex convex polygon $P$. Select one edge of $P$ and denote it by $r$. Label the other edges of $P$ by $A_1$, $A_2$, ..., $A_{n-1}$ in CCW order, start at $r$. Then there exists a bijection between the triangulations of $P$ and parenthesizations of the matrix chain product $A_1 \cdot A_2 \cdot ... \cdot A_{n-1}$.
 
 **Proof:**
 
@@ -938,7 +938,7 @@ Consider an $n$-vertex convex polygon $P$. Select one edgje of $P$ and denote it
 ##### Detailed explanation 
 
 Our purpose is to find the triangulation of P that has the minimum total length. Namely, the total length
-of diagonals used in the triangulation is minimized. We would like to compute the optimal triangulation using divide and conquer. As the figure on the right demonstrate, there is always a triangle in the triangulation, that breaks the polygon into two polygons. Thus, we can try and guess such a triangle in the optimal triangulation, and recurse on the two polygons such created. The only difficulty, is to do this in such a way that the recursive subproblems can be described in succinct way.
+of diagonals used in the triangulation is minimized. We like to compute the optimal triangulation using divide and conquer. As the figure on the right demonstrate, there is always a triangle in the triangulation, that breaks the polygon into two polygons. Thus, we can try and guess such a triangle in the optimal triangulation, and recurse on the two polygons such created. The only difficulty, is to do this in such a way that the recursive subproblems can be described in succinct way.
 
 To this end, we assume that the polygon is specified as list of vertices 1 . . . n in a clockwise ordering. Namely, the input is a list of the vertices of the polygon, for every vertex, the two coordinates are specified. The key observation, is that in any triangulation of P, there exist a triangle that uses the edge
 between vertex 1 and n (red edge in figure on the left). In particular, removing the triangle using the edge 1− n leaves us with two polygons which their vertices are consecutive along the original polygon.
@@ -1139,7 +1139,7 @@ OptimalStaticBinarySearchTree can be solved in $O(n^2)$ time and space for $n$ k
 
 
 
-In 1975 Mehlhorn suggested a simple algoirthm that computes a near-optimum binary search tree in $O(n)$ time:
+In 1975 Mehlhorn suggested a simple algorithm that computes a near-optimum binary search tree in $O(n)$ time:
 
 - Choose the root of the tree such that the sums of the weights of the left and right subtrees are balanced as good as possible.
 - Apply this scheme recursively for each subtree.
@@ -1186,8 +1186,6 @@ A pseudorandom number generator will, by its very nature, never yield "true" ran
 - The probability of an incorrect output is bound based on an error analysis
 - Repetitions of Monte Carlo algorithms tend to drive down the failure probability exponentially
 
-
-
 ##### Las Vegas algorithm
 
 - Always gives a correct output (or reports an error)
@@ -1195,9 +1193,7 @@ A pseudorandom number generator will, by its very nature, never yield "true" ran
 - Its run-time performance may vary
 
 
-Several Las Vegas algorithms can be turned into Monte Carlo algorithms by
-setting a time budget and stopping the algorithm once this time budget is
-exceeded..
+Several Las Vegas algorithms can be turned into Monte Carlo algorithms by setting a time budget and stopping the algorithm once this time budget is exceeded.
 
 
 
