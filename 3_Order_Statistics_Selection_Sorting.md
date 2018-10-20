@@ -17,7 +17,6 @@ also called the median of $S$.
 
 **Compute:** The $k$-th smallest element of $S$.
 
-
 Not that, if $k=1$ or $k=n$ then Selection can be solved easily using $n-1$ comparisons.
 Furthermore, if the numbers of $S$ are arranged in sorted order then the $k$-th smallest element can be found in $O(n)$ time (or even faster).
 
@@ -46,50 +45,51 @@ Furthermore, if the numbers of $S$ are arranged in sorted order then the $k$-th 
 
 Selection among $n$ distinct numbers can be solved in $O(n)$ time, for any $n,k \in \mathbb{N}$.
 
-** Proof:**
+**Proof:**
 
-1. Grouping of the elements into sets of 5 can be in $O(n)$
-2. Sorting and finding the median for each group can be done in $O(n)$
-3. Finding the median-of-medians can be done in $O(\lceil n/5 \rceil)$
+1. Divide of the elements into sets of 5.
+2. Find the median of each of the $\lceil n/5 \rceil$ groups by first insertion-sorting the elements of each group (of which there are at most 5) and then picking the median from the sorted list of group elements. Insertion of an element in one group takes constant time (due to its fixed size). $O(n)$
+3. Use SELECT recursively to find the median $x$ of the $\lceil n/5 \rceil$ medians found. $O(\lceil \frac{n}{5} \rceil)$
 4. Partitioning of all elements can be done in $O(n)$ 
 5. Recursion: Complexity is determined by the size of $S_L$ and $S_R$. Therefore, we need to calculate how many elements can be in both sets.
 
 <img src="images/linear_time_selection_4.png" width="300px"/>
 
-​	As we can see the top-left rectangle will be less than or equal to $s$.
-
-​	Hence, $m = |S_L| + 1 \geq \lceil \frac{1}{2} \lceil \frac{3}{5} \cdot n \rceil \rceil$ elements are smaller than $s$. Obviously, $m \geq \frac{3}{10} n$ and, thus, 
-​	$|S_L| \geq \frac{3}{10}n -1$.
-
-​	Hence, $|S_R| \leq \frac{7}{10}n$. Similarly, $|S_R| \geq \frac{3}{10} n +O(1)$ and  $S_L \leq \frac{7}{10} n + O(1)$, resulting in the 
-
-​	recurrence relation:
-
-​	$\hspace{5cm} T(n) \leq T(\lceil \frac{n}{5} \rceil) + T(\frac{7n}{10}) + O(n)$
-
 ​	
 
-​	$T(n) \leq C(\lceil \frac{n}{5} \rceil) + C(\frac{7n}{10}) + O(n)$
+We know try to bound the number of elements in $S_R$. At least half of the medians are greater than or equal to the median-of-medians $x$. Thus, at least half of the $\lceil n/5 \rceil$ groups contribute at least 3 elements that are greater than $x$, except for the one group that has fewer than 5 elements if 5 does not divide $n$ exactly, and the one group containing $x$ itself.
 
-​	$T(n) \leq c \cdot \lceil \frac{n}{5} \rceil + c \cdot \frac{7n}{10} + an$
+​                                                          $|S_R| \geq 3( \lceil \frac{1}{2} \lceil\frac{n}{5} \rceil - 2\rceil ) \geq \frac{3n}{10} - 6$
 
-​	$T(n) \leq cn/5 + c + c \cdot \frac{7n}{10} + an$
+Now, it's also easy to bound the size of $S_L$.
 
-​	$T(n) \leq \frac{9cn}{10} + c + an  \hspace{4cm}	T \in O(n)$
+​                                                          $|S_L| < n - \frac{3n}{10} - 6= \frac{7n}{10}+6$
 
+We can now develop a recurrence for the worst-case running time $T(n)$ of the algorithm SELECT.
 
+​                                                          $T(n) = T(\lceil \frac{n}{5} \rceil) + T(\frac{7n}{10} +6) + O(n)$
 
-- Unfortunately, the constant hidden in the O-term is fairly large: Depending on
-  details of the actual implementation, this algorithm requires about 50n
-  comparisons! Hence, linear-time selection is too slow to be useful in practice.
+We show that the running time is linear by substitution. More specifically, we will show that $T(n) \leq cn$ for some suitably large constant $c$ and all $n > 0$. We begin by assuming that $T(n) \leq cn$ for some suitably large constant $c$ and all $n < 140$; this assumption holds if $c$ is large enough.
+
+$T(n) \leq c \lceil n/5 \rceil + c(7n/10 +6) + an$
+
+$T(n) \leq c n/5 +c + 7cn/10 +6c + an = 9cn/10 +7c + an$
+
+$T(n) \leq  cn + (-cn/10 +7c +an)$
+
+which is at most $cn$ if $-cn/10 +7c +an \leq 0$
+
+Solving this inequality for $n=140$ shows that $c \leq 20a$. The worst-case running time of SELECT is therefore linear.
+
+##### Caution:
+
+- Unfortunately, the constant hidden in the O-term is fairly large: Depending on details of the actual implementation, this algorithm requires about 50n comparisons! Hence, linear-time selection is too slow to be useful in practice.
 
 - Worst-Case Complexity: $T \in O(n)$
 
 
 
 ### Expected Linear-Time Selection
-
-
 
 1. Pick an element $s$ uniformly at random from $S$
 2. Partition $S$ relative to $s$ into $S_L$ and $S_R$ such that all elements of $S_L$ ares smaller than $s$ and all elements of $S_R$ are greater than $s$.
@@ -107,19 +107,24 @@ $\hspace{8cm} \frac{2}{n} \cdot \frac{2}{n-1} \cdot \frac{2}{n-2} \cdot ... \cdo
 
 **Expected complexity:**
 
-- Let $T(n)$ be an upper bound on the expected time to process a set $S$ with $n$ (or fewer) elements.
+Let $T(n)$ be an upper bound on the expected time to process a set $S$ with $n$ (or fewer) elements. We say that $s$ is luck if it lies between the 25th and the 75th percentile of $S$. In other words, $s$ is lucky if $|S_L| \leq 3n/4$ and $|S_R| \leq 3n/4$. Since $s$ is chosen uniformly, both events occur with the same probability of $1/2$.
 
-- Call $s$ lucky if $|S_L| \leq \frac{3n}{4}$ and $<|S_R| \leq \frac{3n}{4}$
+This gives us:
 
-- Hence, $s$ is lucky if it lies between 25th and the 75th percentile of $S$, which happens with probability $1/2$
+$T(n) \leq \text{Time to partition} + \text{Maximum expected time for recursion}$
 
-- This gives us:
+$T(n) \leq n + \text{Pr(s is lucky)} \cdot T(\frac{3n}{4}) + \text{Pr(s is unlucky)} \cdot T(n)= n + \frac{1}{2} T(\frac{3n}{4}) + \frac{1}{2} T(n)$
 
-  $T(n) \leq \text{Time to partition} + \text{Maximum expected time for recursion}$
+Hence, after substracting $\frac{1}{2}T(n)$ from both sides, we get:
 
-  $T(n) \leq n + \text{Pr(s is lucky)} \cdot T(\frac{3n}{4}) + \text{Pr(s is unlucky)} \cdot T(n)$
+$T(n) \leq T(\frac{3n}{4}) + 2n$
 
-  $= n + \frac{1}{2} T(\frac{3n}{4}) + \frac{1}{2} T(n)$
+
+
+$T(n) \leq T(9n/16) + 2n + 3n/2 = T(27n/64) + 2n + 3n/2 + 9n/8$ 
+
+$T(n) \leq T(81n/256) + 2n + 3n/2 + 9n/8  + 27n/32 \leq 8n$
+
 
 
 ### Theorem (106)
