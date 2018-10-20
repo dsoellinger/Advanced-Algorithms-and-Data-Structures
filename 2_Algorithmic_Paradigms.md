@@ -1275,40 +1275,103 @@ Knuth Shuffle resolves both issues. It's complexity is $O(n)$ and all permutatio
 
 
 
-#### Randomized Quick Sort
+#### Non-Randomized Quicksort
+
+The quicksort algorithm has a worst-case running time $\theta(n^2)$ on an input array of $n$ numbers. Despite this slow worst-case running time, quicksort is often the best practical choice for sorting because it is remarkably efficient on the average: Its expected running time is $\theta(n \cdot log(n))$ and the constant facters hidden in the $\theta(n \cdot log(n))$ notation are quite small. 
+In contrast to Merge Sort, Quicksort also has the advantage of **sorting in place**.
 
 ```
-void quicksort(array)
-    if length(array) > 1
-        pivot := select any element of array
-        left := first index of array
-        right := last index of array
-        while left ≤ right
-            while array[left] < pivot
-                left := left + 1
-            while array[right] > pivot
-                right := right - 1
-            if left ≤ right
-                swap array[left] with array[right]
-                left := left + 1
-                right := right - 1
-        quicksort(array from first index to right)
-        quicksort(array from left to last index)
+void quicksort(A, p, r):
+	if p < r:
+		q = Partition(A,p,r)
+		quicksort(A,p,q-1)
+		quicksort(A,q+1,r)
+```
+
+```
+void partition(A, p, r):
+	x = A[r]
+	i = p-1
+	for j=p to r-1
+		if A[j] <= x:
+			i = i+1
+			exchange A[i] with A[j]
+	exchange A[i+1] with A[r]
+	return i+1
+```
+
+##### Example: Partitioning
+
+<img src="images/quicksort_partitioning.png" width="150px" />
+
+##### Worst-case Partitioning
+
+The worst-case behavior for Quicksort occurs when the partitioning routine produces one subproblem with $n-1$ elements and one with $0$ elements. Lets assume that this unbalanced partitioning arises in each recursive call. Partitioning takes $\theta(n)$ time.
+
+$T(n)  = T(n-1) + T(0) + \theta(n) = T(n-1) + \theta(n) \rightarrow \theta(n^2)$
+
+
+
+##### Best-case Partitioning
+
+In the most even possible split we get two subproblems, each of size no more than $n/2$, since one is of size $\lfloor n/2 \rfloor$ and and one of size $\lceil n/2 \rceil -1$.
+
+$T(n) = 2T(n/2) + \theta(n) \rightarrow \theta(n \cdot log(n))$
+
+
+
+##### Balanced partitioning
+
+Interestingly, the average-case running time of quicksort is much closer to the best case than to the worst case. The key understanding why is to understand how the blance of the partitioning is reflected in the recurrence that describe the running time.
+
+For example, let's assume that the partitioning algorithm always produces a 9-to-1 proportional split, which seems quite unbalanced. This leads to the following recursion:
+
+​                                                                      $T(n) = T(9n/10) + T(n/10) + cn$
+
+Obviously, the depth of the smaller subtree has height $log_{10}(n) = \theta(n)$ and the levels have a cost of $cn$. The height of the larger subtree is $log_{10/9}(n) = \theta(log(n))$ and cost are not more than $cn$.
+
+Hence, Quicksort still runs in $O(n \cdot log(n))$ time.
+
+
+
+<img src="images/quicksort_balanced_partitioning.png" width="400px" />
+
+
+
+
+#### Randomized Quicksort
+
+```
+void randomized_quicksort(A, p, r):
+	if p < r:
+		q = RandomizedPartition(A,p,r)
+		quicksort(A,p,q-1)
+		quicksort(A,q+1,r)
+```
+```
+void randomized_partition(A, p, r):
+	i = random(p,r)
+	exchange A[r] with A[i]
+	return partition(A,p,r)
 ```
 
 
 
-##### Standard Quick Sort
+#### Comparison: Quicksort vs. Randomized Quicksort 
+
+##### Standard Quicksort
+
+- Picks the left-most element $p$ of the array as the pivot
 
 - $O(n^2)$ worst-case complexity, even when using median-of-three partitioning. The worst
   case happens if the sizes of the subproblems are not balanced. The selection of the pivot element determines the sizes of the subproblems. It is thus crucial to select a "good" pivot.
 - One can specify worst-case input!
 - $O(n \cdot log(n))$ average-case complexity
 
-##### Randomized Quick Sort
+##### Randomized Quicksort
 
+- Pick an element $p$ of the array as the pivot **uniformly at random**.
 - $O(n \cdot log(n))$ expected-time complexity for all inputs of n numbers.
-
 - One can also generate a random permutation of the input numbers and then run the standard QuickSort on that shuffled array.
 
 
@@ -1318,36 +1381,40 @@ The expected number of comparisons made by a randomized QuickSort on an array of
 
 **Proof:**
 
+The algorithm makes at most $n$ calls to PARTITION, which does a constant amount of work and then executes for loop some number of times. Our goal, therefore, is to compute $X$, the total number of comparisons performed in all calls to PARTITION. We will not attempt to analyze how many comparisons are made in each call to PARTITION. Rather, we will derive an overall boudn the total number of comparisons.
+
 In the following, we prove that if the pivot is selected uniformly at random, the expected number of comparisons of this randomized version of Quicksort is bounded by $O(n \cdot log(n))$.
 
 Let $a = (a_1, a_2, ..., a_i, . . . a_j, . . . a_n)$ denote the list of elements we want to sort, in sorted
 order. Note that, for the analysis we may assume that we know the order. The input is any
-permutation of a. For all $1 \leq i < j \leq n$, let $X_{i,j}$ denote the random variable indicating whether Quicksort compared $a_i$ and $a_j$.
+permutation of a. For all $1 \leq i < j \leq n$, let $X_{i,j}$ denote the random variable indicating whether Quicksort compared $a_i$ and $a_j$ at any time during the execution of the algorithm (not just during on call of PARTITION).
 
 $\hspace{5cm} X_{i,j} = \begin{cases} 1 \hspace{2cm} \text{if Quicksort compares } a_i \text{ and } a_j  \\ 0 \hspace{2cm} \text{otherwise} \end{cases}$
 
 
-Any two elements get compared at most once. The expected number of comparisons is thus
+Since each pair is compared at most once, the expected number of comparisons can be characterized by: 
 
-$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} X_{ij}$
+$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij}) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} 1 \cdot Pr(X_{ij}=1) + 0 \cdot Pr(X_{ij}=0) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} Pr(X_{ij}=1)$
 
-Due to linearity of the expectation we get:
+It remains to compute $Pr(X_{ij}=1)$ which is the probability that $a_i$ gets compared to $a_j$.
 
-$\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij})$
-
-Quicksort compares $a_i$ and $a_j$ if and only if either
+We know that Quicksort compares $a_i$ and $a_j$ if and only if either
 - we choose $a_i$ or $a_j$ as pivot then we do compare them.
 - we choose $p < a_i$ or $p > a_j$ then the decision is deferred and we will pick a new pivot in the next recursive step.
 
-At each step, the probability that $X_{ij} = 1$ under the condition that we will certainly not compare $a_i$ to $a_j$ in the future is exactly $\frac{2}{j−i+1}$. Hence, the overall probability of $X_{ij} = 1$ equals $\frac{2} {j−i+1}$, too.  (Propability that we choose $a_i$ + Propability that we choose $a_j$)
+Thus, $a_i$ and $a_j$ will only be compared if and only if the first element to be chosen as pivot is either $a_i$ or $a_j$. Prior to the point at which an element has been chosen as pivot, the whole set is together in the same partition. Therefore, any element is equally likely to be the first one chosen as a pivot.
 
-Thus, we have $\mathbb{E}[X_{ij}] = \frac{2}{j-i+1}$
+$Pr(a_i \text{ is compared to } a_j) = Pr(a_i \text{ is chosen as pivot})  + Pr(a_j \text{ is chosen as pivot})= \frac{1}{j-i+1} + \frac{1}{j-i+1} = \frac{2}{j-i+1}$
+
+So, at each step, the probability that $X_{ij} = 1$ under the condition that we will certainly not compare $a_i$ to $a_j$ in the future is exactly $\frac{2}{j−i+1}$. Furthermore, we can conclude that $\mathbb{E}[X_{ij}] = \frac{2}{j-i+1}$
 
 $\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij}) =  \sum_{i=1}^{n-1} \sum_{j=1+1}^{n}  \frac{2}{j-i+1}$
 
-$=  \sum_{i=1}^{n-1} 2 \cdot ( \frac{1}{2} + \frac{1}{3} + ... + \frac{1}{m-i+1})$
+$=  \sum_{i=1}^{n-1} 2 \cdot ( \frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n-i+1})$
 
-$< 2n (\frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n}) = 2nln(n)$
+$< 2n (\frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n}) = 2n(H_n-1) < 2nln(n)$
+
+**Note:** $H_n = 1+ \frac{1}{2} + \frac{1}{3} + ... + \frac{1}{n} = \sum_{k=1}^n \frac{1}{k} \hspace{2cm}$ ... Harmonic Series
 
 
 
