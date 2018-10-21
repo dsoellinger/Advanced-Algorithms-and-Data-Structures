@@ -41,7 +41,7 @@ Consider a binomial tree $B_k$ of order $k$.
 Consider a binomial tree $B_k$. It's order is $1$. Obviously, the tree comprises of $1$ subtree of order $1$.
 
 **IH:**
-A binomial tree $B_k$ consists of $k$ subtrees of the orders $k-1​$, $k-2​$, ..., $1​$, $0​$.
+A binomial tree $B_k$ consists of $k$ subtrees of the orders $k-1$, $k-2$, ..., $1$, $0$.
 
 **IS:**
 We consider a bionmial tree $B_{k+1}$ of order $k+1$. According to the definition of a binomial tree it comprises of two binomial trees $B_{k}$. Applying the induction hypothesis to $B_k$ tells us that the binomial tree comprises of subtrees of $B_{k-1}$, $B_{k-2}$, ..., $1$, $0$. Hence, we have $B_k$, $B_{k-1}$, $B_{k-2}$, ..., $1$ in total.
@@ -153,6 +153,8 @@ Finding the minimum element in a binomial heap with a total of $n$ nodes takes $
 It suffices to inspect the roots of all binomial trees. There are $\lfloor log(n) \rfloor +1$ trees.
 Obviously, be keeping a pointer to the root with minimum key, this time can be reduced to $O(1)$.
 
+
+
 #### Lemma (120)
 
 The minimum element can be deleted from a binomial heap with a total of $n$ nodes in $O(log(n))$ time.
@@ -160,6 +162,8 @@ The minimum element can be deleted from a binomial heap with a total of $n$ node
 **Proof:**
 The minimum can be found in $O(log(n))$ time. 
 By removing the root / binomial tree we split one binomial tree into a sequence of subtrees which in turn are binomial heap. Now, we merge this new binomial heap with the rest of the original binomial heap. This can be done in $O(log(n))$ time.
+
+
 
 #### Lemma (121)
 The key of a known element of a binomial heap with a total of $n$ nodes can be decreased in $O(log(n))$ time. 
@@ -180,6 +184,8 @@ An element can be deleted from a binomial heap with a total of $n$ nodes in $O(l
 
 We first decrease the key of the element to a value smaller than the minimum key. ($O(log(n))$)
 This causes the element to be the root of a tree. Deleting the element can therefore be done in $O(log(n))$ time.
+
+
 
 ### Fibonacci Heaps
 
@@ -218,14 +224,11 @@ This causes the element to be the root of a tree. Deleting the element can there
 
 <img src="images/fibonacci_heap.png" width="400px" />
 
-
-
 #### Insert operation
 
 - Create a new node and insert into the list of root nodes
 
 - Update pointer to (new) minimum root node if required
-
 
 <img src="images/fibonacci_heap_insert.png" width="700px" />
 
@@ -247,7 +250,7 @@ This causes the element to be the root of a tree. Deleting the element can there
 - Link trees until no pair of nodes has the same order
 - Update pointer to minimum root
 
-<img src="images/fibonacci_heap_deleteMin_1.png" width="400px" />
+<img src="images/fibonacci_heap_deleteMin_1.png" width="380px" />
 
 
 
@@ -259,9 +262,9 @@ This causes the element to be the root of a tree. Deleting the element can there
 
 
 
-<img src="images/fibonacci_heap_deleteMin_5.png" width="400px" />
+<img src="images/fibonacci_heap_deleteMin_5.png" width="320px" />
 
-<img src="images/fibonacci_heap_deleteMin_6.png" width="400px" />
+<img src="images/fibonacci_heap_deleteMin_6.png" width="350px" />
 
 
 

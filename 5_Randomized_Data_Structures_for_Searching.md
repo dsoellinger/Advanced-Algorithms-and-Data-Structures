@@ -59,7 +59,7 @@ The **height** of a rooted tree $T$ is the maximum dept of nodes of $T$ with the
 ### Balanced-Tree
 
 A rooted binary tree is (height-balanced) if either it has no proper subtrees or if 
-- it has two proper subtreees and the heights of both subtrees differ by not more than 1, or if
+- it has two proper subtrees and the heights of both subtrees differ by not more than 1, or if
 - it has exactly one proper subtree of height 0
   and if
 - all proper subtrees are height-balanced.
@@ -76,7 +76,7 @@ If $T$ is a balanced binary tree with $n$ nodes and height $h$ then $h \in \thet
 
 An example for a self-balancing search tree is the so-called AVL tree named after Adelson-Vel'skii and Landis. Insertion, searching and deleting all take $O(log(n))$ time in both the **average case** and the **worst case** where $n$ is the number of nodes in the tree.
 
-However, of course, we need to "pay" for keeping the tree balanced. AVL insertions require $O(1)$ rotations (two rotations at most), while deletions require $O(log(n))$  rotations in the worst case ($O(1) in average). 
+However, of course, we need to "pay" for keeping the tree balanced. AVL insertions require $O(1)$ rotations (two rotations at most), while deletions require $O(log(n))$ rotations in the worst case ($O(1)$ in average). 
 
 Its height is at most $\frac{1}{log(\phi )} log(n) \approx 1.44 \cdot log(n)$.
 
@@ -93,7 +93,7 @@ We can think about it like computing a random permutation of the items - where e
 
 Furthermore, we need to keep in mind that we have no guarantee that our tree is balanced. It depends on the application whether randomness can be assumed. Otherwise, the resulting tree could be highly skewed. For instance, if we insert 10 numbers in random order then the resulting tree will degenerate to a list with probability $2/10!$
 
-Nevertheless, the more nodes, the less likely the tree is degenrate!
+Nevertheless, the more nodes, the less likely the tree is degenerate!
 
 
 
@@ -121,7 +121,7 @@ The average node depth of a randomly build binary search tree is $O(log(n))$.
 
 **Proof:**
 
-The depth of a node equals the number of comparisons made during the BST construction. Since all permutations of th ekeys are equally likely, the verage node depth $d_n$ is given by
+The depth of a node equals the number of comparisons made during the BST construction. Since all permutations of the keys are equally likely, the average node depth $d_n$ is given by
 
 $d_n = \frac{1}{n} \mathbb{E}[\sum_{i=1}^n(\text{# comparisons for node i})] = \frac{1}{n} O(n \cdot log(n)) = O(log(n))$
 
