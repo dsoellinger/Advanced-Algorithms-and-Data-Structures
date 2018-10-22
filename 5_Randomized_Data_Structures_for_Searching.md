@@ -20,18 +20,18 @@ A **dictionary** is a collection ADT (abstact data type) that focuses on data st
 A **set** is a collection ADT that allows to store data items and focuses on efficient membership tests.
 
 - Data items
-	- A data item is a key or key-value pair with trivial value
-	- The order of the data items does not matter
-	- Duplicate data items are not permitted
+  - A data item is a key or key-value pair with trivial value
+  - The order of the data items does not matter
+  - Duplicate data items are not permitted
 - Standard operations
-	- Insert item into structure
-	- Delete item from structure
-	- Test membership, i.e., check whether it has an item with a given key $k$
+  - Insert item into structure
+  - Delete item from structure
+  - Test membership, i.e., check whether it has an item with a given key $k$
 - Core set-theoretic operations for two sets $S$, $T$
-	- Union: Compute the union of $S$ and $T$
-	- Intersection: Compute the intersection of $S$ and $T$
-	- Difference: Compute the difference of $S$ and $T$
-	- Subset: Check whether $S$ is a subset of $T$
+  - Union: Compute the union of $S$ and $T$
+  - Intersection: Compute the intersection of $S$ and $T$
+  - Difference: Compute the difference of $S$ and $T$
+  - Subset: Check whether $S$ is a subset of $T$
 
 
 
@@ -83,6 +83,34 @@ Its height is at most $\frac{1}{log(\phi )} log(n) \approx 1.44 \cdot log(n)$.
 **Note:** Of course, keeping the tree balances causes some additional overhead. We, therefore, try to relax this requirement by making it less strict.
 
 
+
+### Balancing Trees
+
+Once we inserted a new node in the tree, we have to make sure that the tree is still balanced. This done via rotation. To figure out whether a subtree needs to be rotated we calculate a balance factor for every node.
+
+​                                                       $BF = h(\text{Left-Subtree}) - h(\text{Right-Subtree})$
+
+
+
+We need to rebalance the tree once the height of any node is $\geq 2$.
+
+#### Examples:
+
+**Right - Right - Tree: ** Requires L-Rotation
+
+<img src="images/right_right_tree.png" width="100px" />
+
+
+
+<img src="images/right_right_tree_solution.png" width="100px" />
+
+
+
+**Right - Left - Tree:** Requires RL-Rotation
+
+<img src="images/right_left_tree.png" width="100px" />
+
+<img src="images/right_left_tree_solution.png" width="100px" />
 
 ### Random BST
 
@@ -140,7 +168,7 @@ A binary search tree $T$ with $n$ nodes is a **randomized binary search tree** (
 - both its left subtree $L$ and right subtree $R$ are independent randomized binary search trees,
 - Pr($L$ has $i$ nodes) = $\frac{1}{n}$    for all $0 \leq i \leq n-1$
 
-An immediate consequence of this definition above is that any of the keys of a random BST of size  has the same probability, namely $1/n$, of being the root of the tree.
+An immediate consequence of this definition above is that any of the keys of a random BST of size has the same probability, namely $1/n$, of being the root of the tree.
 
 
 

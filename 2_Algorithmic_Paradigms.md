@@ -1381,7 +1381,7 @@ The expected number of comparisons made by a randomized QuickSort on an array of
 
 **Proof:**
 
-The algorithm makes at most $n$ calls to PARTITION, which does a constant amount of work and then executes for loop some number of times. Our goal, therefore, is to compute $X$, the total number of comparisons performed in all calls to PARTITION. We will not attempt to analyze how many comparisons are made in each call to PARTITION. Rather, we will derive an overall boudn the total number of comparisons.
+The algorithm makes at most $n$ calls to PARTITION, which does a constant amount of work and then executes for loop some number of times. Our goal, therefore, is to compute $X$, the total number of comparisons performed in all calls to PARTITION. We will not attempt to analyze how many comparisons are made in each call to PARTITION. Rather, we will derive an overall bound the total number of comparisons.
 
 In the following, we prove that if the pivot is selected uniformly at random, the expected number of comparisons of this randomized version of Quicksort is bounded by $O(n \cdot log(n))$.
 
@@ -1392,7 +1392,7 @@ permutation of a. For all $1 \leq i < j \leq n$, let $X_{i,j}$ denote the random
 $\hspace{5cm} X_{i,j} = \begin{cases} 1 \hspace{2cm} \text{if Quicksort compares } a_i \text{ and } a_j  \\ 0 \hspace{2cm} \text{otherwise} \end{cases}$
 
 
-Since each pair is compared at most once, the expected number of comparisons can be characterized by: 
+Since **each pair is compared at most once**, the expected number of comparisons can be characterized by: 
 
 $\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij}) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} 1 \cdot Pr(X_{ij}=1) + 0 \cdot Pr(X_{ij}=0) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} Pr(X_{ij}=1)$
 
@@ -1400,13 +1400,13 @@ It remains to compute $Pr(X_{ij}=1)$ which is the probability that $a_i$ gets co
 
 We know that Quicksort compares $a_i$ and $a_j$ if and only if either
 - we choose $a_i$ or $a_j$ as pivot then we do compare them.
-- we choose $p < a_i$ or $p > a_j$ then the decision is deferred and we will pick a new pivot in the next recursive step.
+- we choose $p < a_i​$ or $p > a_j​$ then the decision is deferred and we will pick a new pivot in the next recursive step.
 
 Thus, $a_i$ and $a_j$ will only be compared if and only if the first element to be chosen as pivot is either $a_i$ or $a_j$. Prior to the point at which an element has been chosen as pivot, the whole set is together in the same partition. Therefore, any element is equally likely to be the first one chosen as a pivot.
 
 $Pr(a_i \text{ is compared to } a_j) = Pr(a_i \text{ is chosen as pivot})  + Pr(a_j \text{ is chosen as pivot})= \frac{1}{j-i+1} + \frac{1}{j-i+1} = \frac{2}{j-i+1}$
 
-So, at each step, the probability that $X_{ij} = 1$ under the condition that we will certainly not compare $a_i$ to $a_j$ in the future is exactly $\frac{2}{j−i+1}$. Furthermore, we can conclude that $\mathbb{E}[X_{ij}] = \frac{2}{j-i+1}$
+So, at each step, the probability that $X_{ij} = 1$ under the condition that we will certainly not compare $a_i$ to $a_j$ **in the future** is exactly $\frac{2}{j−i+1}$. Furthermore, we can conclude that $\mathbb{E}[X_{ij}] = \frac{2}{j-i+1}$
 
 $\mathbb{E}(X) = \sum_{i=1}^{n-1} \sum_{j=1+1}^{n} \mathbb{E}(X_{ij}) =  \sum_{i=1}^{n-1} \sum_{j=1+1}^{n}  \frac{2}{j-i+1}$
 
