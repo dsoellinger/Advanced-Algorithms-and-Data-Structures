@@ -65,7 +65,6 @@ Suppose that some algorithm runs in $2^c n^{1+1/c}$ time, where $c \in \mathbb{R
 
 - Hence, the best possible way to express this complexity is to write $O(n^{1+\epsilon})$
 
-
 ## Master Theorem
 
 Consider constants $n_0 \in \mathbb{N}$ and $a,b \in \mathbb{N}$ with $b \geq 2$ and a function $f: \mathbb{N} \rightarrow \mathbb{R}_0^⁺$. 
@@ -86,7 +85,7 @@ $T \in \begin{cases} \theta(f) \hspace{3cm} \text{if } f \in \Omega(n^{log_b(a)+
 
 #### Worst-case complexity
 
-A *wort-case complexity* of an algorithm is a function $f: \mathbb{N} \rightarrow \mathbb{R}^+$ that gives an upper bound on the number of elemenatry operations (memory units, ...) used by an algorithm with respect to the size of its input, for all inputs of the same size.
+A *worst-case complexity* of an algorithm is a function $f: \mathbb{N} \rightarrow \mathbb{R}^+$ that gives an upper bound on the number of elementary operations (memory units, ...) used by an algorithm with respect to the size of its input, for all inputs of the same size.
 
 #### Average-case complexity
 
@@ -94,7 +93,7 @@ An *average-case complexity* of an algorithm is a function $g: \mathbb{N} \right
 
 #### Input size
 
-The *size of the input* of an algoirhtm is a quantity that measures the number of input items relevant for elementary operations of the algorithm.
+The *size of the input* of an algorithm is a quantity that measures the number of input items relevant for elementary operations of the algorithm.
 
 
 
@@ -125,6 +124,7 @@ Hence, several alternative models have been proposed:
 - Algebraic Decision/Computation Tree (ADT/ACT) model
 
 - Blum-Shub-Smale model
+
 
 
 ##### Integer Random Access Machine
@@ -803,7 +803,7 @@ By the I.H. we know that the bank account was not negative when we double from a
 
 ##### Method: Potential Method
 
-In case of the potential method we define a so-called *potential function* $\phi: \{A_i: 0 \leq i \leq n \} \rightarrow \mathbb{R}$ for a sequence of $n$ operations. The function needs to preserve the following properties:
+In case of the potential method we define a so-called *potential function* $\phi: \{A_i: 0 \leq i \leq n \} \rightarrow \mathbb{R}$ for a sequence of $n$ operations. $A_i$ is referred as data structure. The function needs to preserve the following properties:
 - $\phi(A_0) = 0$
 - $\phi(A_i)  \geq 0$ for all $i \in \mathbb{R}$
 
@@ -820,14 +820,14 @@ $\sum_{i=1}^n c_i' = \sum_{i=1}^n (c_i + \phi(A_i) - \phi(A_{i-1})) = (\phi(A_n)
 
 This, if $\phi(A_i) \geq 0$ for all $n \in \mathbb{N}$ and $\phi(A_0) = 0$ then the total amortized costs are an upper bound on the total true costs.
 
-But how to choose a proper potential function? It is obvious that a elaborate and clever choice of the potential function is a prerequisite for achieving a tight bound. Unfortunately, good potential functions tend to be hard to find . . .
+But how to choose a proper potential function? It is obvious that an elaborate and clever choice of the potential function is a prerequisite for achieving a tight bound. Unfortunately, good potential functions tend to be hard to find . . .
 
 
 **Example:**
 
 For analyzing our dynamic array with the potential method we define the potential as follows:
 
-$\phi(A_i) := 2i - 2^{\lceil log(i) \rceil}$  for $i \in \mathbb{N_0}$                          Note that we interprete $2^{log 0}$ as $0$.
+$\phi(A_i) := 2i - 2^{\lceil log(i) \rceil}$  for $i \in \mathbb{N_0}$                          Note that we interprete $2^{log(0)}$ as $0$.
 
 However, before we study the amortized costs is always good to verify that it preserves the properties required by the a potential function. In other words, $\phi(A_0)$ needs to be $0$ and $\phi(A_i)$ needs to be greater or equal to $0$.
 
@@ -867,41 +867,46 @@ If we need to store a (possible large) binary counter then it is natural to reso
 
 When does the i-th bit need to be toggled?
 
-- A[1] is toggled very time
-- A[2] is toggled every second time
-- A[3] is toggled very fourth time
+- A[0] is toggled very time
+- A[1] is toggled every second time
+- A[1] is toggled very fourth time
 
-In general this means that A[i] is toggled $\lfloor \frac{n}{2^{i-1}} \rfloor$ many times.
+Therefore, we can conclude that incrementing the counter $n$ times toggles the ...
 
-Analyzing the data structure by means of the aggregate method leads to the following result:
+- A[0] $n$ times
+- A[1] $n/2$ times
+- A[2] $n/4$ times
+- ...
 
-$\sum_{i=1}^n \lfloor \frac{n}{2^{i-1}}\rfloor = \sum_{i=0}^{n-1} \lfloor \frac{n}{2^i} \rfloor \leq  n \cdot \sum_{i=0}^{n-1} \frac{n}{2^i} \leq  n \cdot \sum_{i=0}^{\infty} \frac{1}{2^i} = 2n$
+Hence, the sum of toggled bits after $n$ k-bit counter increments becomes:
 
-Hence, we get 2 as the amortized cost of one increment.
+$\sum_{i=0}^{k-1} \frac{n}{2^{i}} = n \cdot \sum_{i=0}^{k-1} \frac{1}{2^i} = n \cdot (1 + \sum_{i=1}^{k-1} \frac{1}{2^i}) $
+
+$n + \sum_{i=1}^{k-1} \frac{1}{2^i} \leq n + n \cdot \sum_{i=1}^\infty \frac{1}{2^i} = n + \frac{1/2}{1-1/2}n = n + n = 2n$
+
+According to amortized analysis:      $\sum_{i=1}^n c_i \leq \sum_{i=1}^n c_i'$
+
+$\sum_{i=1}^n c_i \leq \sum_{i=1}^n c_i' \leq \sum_{i=0}^{\lfloor log(n) \rfloor } \frac{n}{2^i} \leq 2n$
+
+Hence, we get $2$ as the amortized cost of one increment.
 
 
 
 #### Practical relevance of log-terms
 
 Since $2^{20}=1 048 576$ and $2^{25}=33 554 432$, in most applications the value of $log(n)$ will hardly be significantly greater than 25 for practically relevant values.
-Hence, shaving off a log-term might constitute an important accomplishment
-when seen from a purely theoretical point of view, but its practical impact is likely
-to be much more questionable. In particular, multiplicative constants hidden in the O-terms may easily diminish the actual difference in speed between, say, an $O(n)$-algorithm and an
-$O(n \cdot log(n))$-algorithm.
+Hence, shaving off a log-term might constitute an important accomplishment when seen from a purely theoretical point of view, but its practical impact is likely to be much more questionable. In particular, multiplicative constants hidden in the O-terms may easily diminish the actual difference in speed between, say, an $O(n)$-algorithm and an $O(n \cdot log(n))$-algorithm.
 
 
 
 **IMPORTANT!**
-Do not rely purely on experimental analysis to “detect” a log-factor: The difference
-between log(1 024) = log 2 10 and log(1 048 576) = log 2 20 is just a multiplicative
-factor of two!
+Do not rely purely on experimental analysis to "detect" a log-factor: The difference between $log(1 024) = log(2^{10})$ and $log(1 048 576) = log(2^{20})$ is just a multiplicative factor of two!
 
 
 
 #### Impact of Compile-Time Optimization
 
-Optimizing compilers try to minimize important characteristics of a program, such
-as its CPU-time consumption. Typically, heuristics are employed that transform a program to a (hopefully) sementically equivalent program since some problem related to code optimization are NP-complete or even undecidable.
+Optimizing compilers try to minimize important characteristics of a program, such as its CPU-time consumption. Typically, heuristics are employed that transform a program to a (hopefully) sementically equivalent program since some problem related to code optimization are NP-complete or even undecidable.
 For instance, an optimizing compiler will attempt to keep frequently used variables in registers rather than in main memory. 
 
 **IMPORTANT!**
@@ -956,7 +961,6 @@ Hence, it makes sense to rewrite the standard multiplication algorithm ("ijk-ord
 Re-ordering of the inner loops will cause the matrices **B** and **C** to be accessed row-wise within the inner-most loop, while the indices, i, k of the (i,k)-th element of **AA** remain constant: "ikj-order"
 
 **IMPORTANT:**
-Algorithm engineering should be standard when designing and implementing an algorithm! Decent algorithm engineering may pay off more significantly than attempting to implement a
-highly complicated algorithm just because its theoretical analysis predicts a better
-running time.
+Algorithm engineering should be standard when designing and implementing an algorithm! 
+Decent algorithm engineering may pay off more significantly than attempting to implement a highly complicated algorithm just because its theoretical analysis predicts a better running time.
 
