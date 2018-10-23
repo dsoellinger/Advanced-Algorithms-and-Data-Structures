@@ -538,7 +538,19 @@ Hence, a linear storage can be expected to suffice for storing a skip list.
 
 The expected height of a skip list storing $n$ items is at most $log(n) + 2$.
 
+**Proof:**
 
+The probability that an element gets up to level $L_i$ is $\frac{1}{2^i}$.                                               $p_i = \frac{1}{2^i}$
+
+Hence, the probability that **at least one** element gets up to level $L_i$ after $n$ inserts becomes:
+
+​                                                                $p_i \leq \frac{n}{2^i}$
+
+The probability that the height $h$ is larger than $i$ is equal to the probability that level $i$ has at least one position, that is, it is no more than $p_i$. This means that $h$ is larger than, say, $3 \cdot log(n)$ with probability at most 
+
+​                                                           $p_{3 \cdot log(n)} \leq \frac{n}{2^{3 \cdot log(n)}} = \frac{n}{n^3} = \frac{1}{n^2}$
+
+For example, if $n = 1000$, this probability is a one-in-a-million long shot. More generally, given a constant $c > 1$, $h$ is larger than $c \cdot log(n)$ with probability at most $1/n^{c-1}$ . That is, the probability that $h$ is smaller than $c \cdot log(n)$ is at least  $1 - 1/n^{c-1}$ . Thus, with high probability, the height $h$ of $S$ is $O(log(n))$. 
 
 #### Lemma (143)
 
