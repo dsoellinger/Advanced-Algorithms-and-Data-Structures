@@ -719,7 +719,7 @@ The worst-case time is $\theta(n)$ for a hash table with $n$ KVPs!
 
 ​                                                                                     $h(k) := k \mod m$
 
-
+Since it requires only a single division operation, hashing by division is quite fast.
 
 Of course, $m$ needs to be chosen carefully. Let's consider a few cases:
 
@@ -729,7 +729,7 @@ Of course, $m$ needs to be chosen carefully. Let's consider a few cases:
 
   The $p$ lowest-order bits of $k$ are the last $p$ bits when $k$ is written in binary representation. This is a very poor choice unless we were guaranteed that all low-order p-bit patterns of the keys are equally likely.
 
-  **Why should we choose such a number?** As mentioned above, it's enough to look at the last p-bit numbers. This operation can be done easily with computers (bitwise AND). 
+  **Why should we not choose such a number?** As mentioned above, it's enough to look at the last p-bit numbers. This operation can be done easily with computers (bitwise AND). 
 
   To get a better understanding, we can also consider the decimal case. If I ask you what is 8237643 mod 10348237643, your response will be to reach for your calculator; if I ask you what is 10008237643 mod 1000, you'll tell me that it's 643643 with barely a thought. This is because $1000=10^3$ is a power of ten, whereas 1034 is not.
 
@@ -763,13 +763,13 @@ Let $x \in \mathbb{R}$ with $0 < x <1$. Then
 
 where $x \cdot k \mod 1 := x \cdot k - \lfloor x \cdot k \rfloor$,   i.e., $x \cdot k \mod 1$    is the fractional part of $x \cdot k$.
 
-
+**Advantage:** Choice of $m$ is less critical
 
 - This is a generalization of modular hashing: 		If $x := \frac{1}{m}$ then
 
 ​                            $h(k) = \lfloor m \cdot (\frac{1}{m} \cdot k) \mod 1 \rfloor = \lfloor m \frac{k \mod m}{m} \rfloor= k \mod m$
 
-- Supposedly, $x := \frac{\sqrt{5}-1}{2}$ (Golden ratio) works well. Fibonacci hashing
+- Supposedly, $x := \frac{\sqrt{5}-1}{2}$ works well. Fibonacci hashing
 
 - The multiplication method tends to yield hashes with decent "randomness" for the same reason why linear congruential generators work.
 
@@ -818,9 +818,11 @@ The hash function is chosen randomly (from a diligently designed class of hash f
 
 Let $m \in \mathbb{N}$ and $H$ be a finite collection of hash functions that map a universe $U$ of keys to $\{ 0,1,...,m-1\}$. This collection of has functions is **universal** if
 
-​                                              $|\{ h \in H: h(k) = h(i)| \} \leq \frac{|H|}{m}$
+​                                                               $|\{ h \in H: h(k) = h(i) \}| \leq \frac{|H|}{m}$
 
 for each pair of distinct keys $k,i \in U$.
+
+In words: A collection is said to be **universal** if for each pair of distinct keys $k$, $i$, the number of hash functions $h \in H$ for which $h(k) = h(i)$ is at most $|H|/m$. 
 
 
 
@@ -828,7 +830,7 @@ for each pair of distinct keys $k,i \in U$.
 
 Let $m \in \mathbb{N}$ and $H$ be a universal collection of hash functions. Consider a pair of distinct keys $k,i \in U$ and pick a hash function $h$ randomly from $H$. Then
 
-​                                               $Pr[h(k) = h(i)] \leq \frac{1}{m}$
+​                                                                              $Pr[h(k) = h(i)] \leq \frac{1}{m}$
 
 for each pair of distinct keys $k,i \in U$.
 
@@ -836,7 +838,9 @@ In other words, with a hash function randomly chosen from $H$, the chance of a c
 
 **Proof:**
 
-By definition there are at most $\frac{|H|}{m}$ hash functions with $h(k) = h(i)$, out of a total of $|H|$ hash functions.
+By definition there are at most $\frac{|H|}{m}$ hash functions with $h(k) = h(i)$. 
+
+Hence, the probability that we pick one if these hash functions is $Pr[h(k) = h(i)] \leq \frac{\frac{|H|}{m}}{|H|} = \frac{1}{m}$.
 
 
 
@@ -844,40 +848,31 @@ By definition there are at most $\frac{|H|}{m}$ hash functions with $h(k) = h(i)
 
 Let $m \in \mathbb{N}$ and $H$ be a universal collection of hash functions. Pick a hash function $h$ randomly from $H$ and suppose that it has been used to hash $n$ keys into a hash table $T$ of size $m$, with separate chaining used to resolve collisions.
 
-If key $k$ is not in the table, then the expected length $\mathbb{E}(n_{h(k)})$ of the list that key $k$ hashes to is at most the load factor ˛$\alpha = n/m$.
+If key $k$ is not in the table, then the expected number of elements at position $h(k)$ becomes:
 
-If the keys $k$ is not in $T$ then
-
-​                                                          $\mathbb{E}(n_{h(k)}) \leq \alpha$
+​                                                                               $\mathbb{E}(n_{h(k)}) \leq \alpha$
 
 
 
-If key $k$ is in the table, then the expected length $\mathbb{E}(n_{h(k)})$ of the list that key $k$ hashes to is at most the load factor ˛$\alpha = 1 + n/m$.
+If key $k$ is in $T$ then the expected number of elements becomes:
 
-If the key $k$ is in $T$ then
-
-​                                                        $\mathbb{E}(n_{h(k)}) \leq 1+ \alpha$
+​                                                                               $\mathbb{E}(n_{h(k)}) \leq 1+ \alpha$
 
 **Proof:**
 
-We note that the expectations here are over the choice of the hash function and do not depend on any assumptions about the distribution of the keys. 
+We first define an indictor variables $C_{ki}$ that indicates whether two keys map to the same slot.
 
-For each pair $k$ and $i$ of distinct keys, we define the indicator random variable $C_{ki}$.
-It indicates whether two keys hash to the same slot.
+​                                                         $C_{ki} = \begin{cases} 1 \hspace{1cm } \text{ if  } h(k) = h(i) \\ 0 \hspace{1cm } \text{otherwise} \end{cases}$
 
-​                                            $C_{ki} = \begin{cases} 1 \hspace{1cm } \text{ if  } h(k) = h(i) \\ 0 \hspace{1cm } \text{otherwise} \end{cases}$
+But, what's the probability for any hash function $h$ that two randomly and independently chosen keys $k$ and $i$ map to the same slot? Well, we know that $Pr[h(k)=h(i)] \leq \frac{1}{m}$, so we can conclude that
 
+​                                                            $Pr[C_{ki}=1] \leq \frac{1}{m}$
 
+However, we are now looking for the expected number of elements at a certain position after inserting $n$ elements. First, let's define the random variable $L_k$. It denotes the number of keys (exept $k$) that hash to the list that contains $k$.
 
-By the definition of a universal collection of hash function a single pair of keys collides with probability at most $1/m$.
+​                                                               $\mathbb{E}[L_k] = \mathbb{E}[\sum_{l \in T; i \neq k} C_{ki}] = \sum_{l \in T; i \neq k} \mathbb{E}[C_{ki}] $
 
-​                                     $\mathbb{E}(C_{ki}) = 1 \cdot Pr(h(k) = h(i)) \leq \frac{1}{m}$
-
-For each key $k$ we let the random variable $L_k$ denote the number of keys (except $k$) that hash to the list contains $k$, and get
-
-​                             $\mathbb{E}[L_k] =  \mathbb{E}[\sum_{i \in T, j \neq k} C_{ki})] =  \sum_{i \in T, j \neq k} \mathbb{E}[C_{ki}] \leq \sum_{i \in T, j \neq k} \frac{1}{m}$
-
-
+​                                                                                     $\mathbb{E}[L_k] \leq \frac{1}{m}$
 
 The remainder of the proof depends on whether key $k$ is in table $T$.
 
@@ -891,7 +886,7 @@ The remainder of the proof depends on whether key $k$ is in table $T$.
 
 
 
-The following theorem says universal hashing provides the desired payoff: it has now become impossible for an adversary to pick a sequence of operations that forces the worst-case running time. By cleverly randomizing the choice of hash function at run time, we guarantee that we can process every sequence of operations with a good average-case running time.
+The following theorem (152) says universal hashing provides the desired payoff: it has now become impossible for an adversary to pick a sequence of operations that forces the worst-case running time. By cleverly randomizing the choice of hash function at run time, we guarantee that we can process every sequence of operations with a good average-case running time.
 
 
 
@@ -901,15 +896,15 @@ Let $T$ be an initially empty hash table with $m$ slots with separate chaining u
 
 **Proof:**
 
-If the number of hash-table slots is at least proportional to the number of elements in the table, we have $n=O(m)$ and so $\alpha = \frac{O(m)}{m} = O(1)$. Theorem 151 tells us that a search runs in expected time $O(1)$.
+Since the number of insertions is $O(m)$, we have $n=O(m)$ and so $\alpha = \frac{O(m)}{m} = O(1)$. 
 
-Same for insert and delete (once position is known). By linearity of expection, the expected time of the entire sequence is $O(N)$. Since every operation takes $\Omega(1)$ time, the $\theta(n)$ bound follows.
+Since insert and delete operations take constant time and, by Theorem 151 the expected time for search operation is $O(1)$. By linearity of expection, the expected time of the entire sequence is $O(N)$. Since every operation takes $\Omega(1)$ time, the $\theta(n)$ bound follows.
 
 
 
 ### Definition (153)
 
-For $a \in \mathbb{Z}_p^+$ and $b \in \mathbb{Z}_p$ we define the hash function $h_{a,b,p,m}$ as follows:
+For $a \in \mathbb{Z}_p^*$ and $b \in \mathbb{Z}_p$ we define the hash function $h_{a,b,p,m}$ as follows:
 
 ​                                                $h_{a,b,p,m}(k) := ((a \cdot k + b) \mod p ) \mod m$
 
@@ -919,7 +914,17 @@ Then
 
 
 
-In words: A hash function $h_{a,k,p,m}$ for any $a \in \mathbb{Z}_p^+$ and any $b \in \mathbb{Z}_p$ using a linear transformation followed by reductions modulo $p$ and the modulo $m$.
+**Please note:**
+
+$\mathbb{Z}_p^*$     .....   $\{1,...,p-1\}$
+
+$\mathbb{Z}_p$     .....   $\{0,1,...,p-1\}$
+
+
+
+In words: A hash function $h_{a,k,p,m}$ for any $a \in \mathbb{Z}_p^*$ and any $b \in \mathbb{Z}_p$ using a linear transformation followed by reductions modulo $p$ and the modulo $m$.
+
+**Example:**
 
 For instance, $p=17$ and $m=6$, we have $h_{3,4,17,6}(8) = 5$. This class of hash functions has the nice proprety that the size $m$ of the output range is arbitrary - not necessarily prime. 
 
@@ -927,11 +932,21 @@ For instance, $p=17$ and $m=6$, we have $h_{3,4,17,6}(8) = 5$. This class of has
 
 - Since we have $p-1$ choices for $a$ and $p$ choices $b$, the collection contains $p(p-1)$ hash functions.
 
+**In practice:**
+
+- Choose a prime number $p$ large enough so that every possible key $k$ is in the range $0$ to $\{p-1\}$
+- Because we assume that the size of the universe is greater than the number of slots in the hash table, we have $p >m$.
+- Since $p$ is prime, we can solve equations modulo $p$ with the method shown in section "Multiplication Method"
+
 
 
 ### Theorem (154)
 
 The class $H_{p,m}$ is a universal collection of hash functions.
+
+**Note:**
+
+This class of hash functions has the nice property that the size $m$ of the output range is arbitrary - not necessarily prime. Since we have $p-1$ choices for $a$ and $p$ choices for $b$, the collection $H_{p,m}$ contains $p(p-1)$ hash functions.
 
 
 
@@ -964,7 +979,7 @@ Length = 3	N = 2
 
 ### Perfect Hashing
 
-Although hashing is often a good choice for its excellent average-case performance, hashing can also provide excellent worst-case performance when the set of keys is **static**: Once the keys are stored in the table, the set of keys never changes.
+Although hashing is often a good choice for its excellent average-case performance, hashing can also provide excellent worst-case performance when the set of keys is **static** (no inserts and deletes; just: Once the keys are stored in the table, the set of keys never changes.
 
 Some applications naturally have static sets of keys: consider the set of reserved words in a programming language, or the set of file names on a CD-ROM.
 
@@ -1000,7 +1015,7 @@ If we store $n$ keys in a hash table of size $m := n^2$ by using a hash function
 
 **Proof:**
 
-There are ${n}\choose{2}$ pairs of keys that may collide. Each pair collides with probability $1/m$ if $h$ is chosen at random from a universal family $H$ of hash functions. Let $X$ be a random variable that counts the number of collisions. When $m=n^2$, the expected number of collisions is
+There are ${n}\choose{2}​$ pairs of keys that may collide. Each pair collides with probability $1/m​$ if $h​$ is chosen at random from a universal family $H​$ of hash functions. Let $X​$ be a random variable that counts the number of collisions. When $m=n^2​$, the expected number of collisions is
 
 $\mathbb{E}[X] = $${n} \choose{2}$ $\cdot \frac{1}{n^2}$
 
